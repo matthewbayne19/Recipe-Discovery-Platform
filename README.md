@@ -12,61 +12,10 @@ You’ll build a backend for a **Recipe Discovery Platform** where users can bro
 - Optionally integrate a public API or mock data to power the application.
 - Bonus: Use GraphQL to orchestrate and enrich data from a REST API.
 
-## Requirements
+## Next Steps
+1. **Review the [REQUIREMENTS.md](REQUIREMENTS.md)**
+2. **Follow the steps outlined in [SUBMISSION.md](SUBMISSION.md)**
 
-### Data Model
-- **Recipe**: ID, Name, Description, Ingredients (list), Cuisine, Preparation Time, Difficulty Level.
-- **User**: ID, Username, Favorite Recipes (list of Recipe IDs).
-
-### API Features
-#### REST API
-- `GET /recipes` - List recipes with optional filters (e.g., `?cuisine=Italian`).
-- `GET /recipes/{id}` - Get a single recipe by ID.
-- `POST /users/{userId}/favorites` - Add a recipe to a user’s favorites (e.g., JSON payload with `recipeId`).
-- `GET /users/{userId}/favorites` - List a user’s favorite recipes.
-
-#### GraphQL API (using HotChocolate)
-- **Query**: Fetch all recipes with optional filters (e.g., cuisine, ingredient).
-- **Query**: Fetch a single recipe by ID, including nested ingredients.
-- **Query**: Fetch a user’s favorite recipes.
-- **Mutation**: Add a recipe to a user’s favorites.
-
-### Technical Requirements
-- Use .NET (preferably 6 or later) with HotChocolate for GraphQL.
-- Implement both REST and GraphQL in the same application.
-- Use dependency injection for service layers.
-- Include basic error handling (e.g., 404 for missing resources).
-- Data source: Either integrate a free public API (see below) or mock an in-memory store.
-
-### Bonus Features (Optional)
-- Add sorting or pagination to recipe queries.
-- Implement simple authentication (e.g., API key or JWT simulation).
-- Write unit tests for at least one REST endpoint and one GraphQL resolver.
-
-## Bonus: GraphQL Orchestration Layer
-Take it to the next level by using GraphQL as the entry point to orchestrate calls to a public REST API (e.g., TheMealDB). Enrich the recipe data with additional info (e.g., nutrition) by chaining API calls in resolvers.
-
-### Example Workflow
-- Client queries recipes with nutrition data.
-- GraphQL fetches basic recipe data from TheMealDB REST API.
-- Resolvers fetch additional data (e.g., nutrition from another source or mock) per recipe.
-- Returns a unified response to the client.
-
-### Example Schema
-```graphql
-type Recipe {
-  id: ID!
-  name: String!
-  ingredients: [Ingredient!]!
-  cuisine: String!
-  nutrition: Nutrition
-}
-
-type Nutrition {
-  calories: Float
-  protein: Float
-}
-
-type Query {
-  recipes(search: String): [Recipe!]!
-}
+## Reach out if you have questions!
+1. **Reach out to us at developers@travelinsured.com with any questions you have. Include "Recipe Discovery Platform Coding Challenge" in your subject line**
+2. **Happy Coding! We look forward to seeing what you build!**
