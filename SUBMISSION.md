@@ -6,7 +6,7 @@ Since this repository (`recipe-discovery-challenge`) is private, you can’t for
 
 ## Step 1: Accept the Invitation
 1. **Check Your Email**:
-   - You’ve been invited as a collaborator to the private repo: `https://github.com/yourusername/recipe-discovery-challenge`.
+   - You’ve been invited as a collaborator to the private repo: `https://github.com/developer-tii/recipe-discovery-challenge`.
    - Look for an email from GitHub titled “Invitation to collaborate on yourusername/recipe-discovery-challenge.”
 2. **Accept the Invite**:
    - Click the link in the email, sign into GitHub, and accept the invitation.
@@ -18,11 +18,18 @@ Since this repository (`recipe-discovery-challenge`) is private, you can’t for
 You’ll need to download the challenge files to your computer.
 
 1. **Get the Clone URL**:
-   - Visit `https://github.com/yourusername/recipe-discovery-challenge`.
-   - Click the green **Code** button and copy the HTTPS URL (e.g., `https://github.com/yourusername/recipe-discovery-challenge.git`).
+   - Visit `https://github.com/developer-tii/recipe-discovery-challenge`.
+   - Click the green **Code** button and copy the HTTPS URL (e.g., `https://github.com/developer-tii/recipe-discovery-challenge.git`).
 2. **Open a Terminal**:
    - Use Git Bash, PowerShell, or your IDE’s terminal.
 3. **Clone the Repo**:
    - Navigate to your workspace:
      ```bash
      cd /path/to/your/workspace
+     Run:
+     git clone https://github.com/developer-tii/recipe-discovery-challenge.git
+     Enter your GitHub credentials if propmpted (username and password or a personal access token).
+     
+4. **Navigate into the Folder:**
+    ```bash
+    cd recipe-discovery-challenge
