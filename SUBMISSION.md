@@ -83,3 +83,7 @@ Invite me as a collaborator to your private repo so we can review your work.
         - Updated README.md with setup instructions and a sample GraphQL query/mutation.
         - Explanation of your design choices (in README or comments).
     - Test your solution locally to confirm it works as expected.
+
+## Step 7: Review
+    - We will reach out to you to schedule a follow-up interview to discuss the solution you've come up with!
+    
