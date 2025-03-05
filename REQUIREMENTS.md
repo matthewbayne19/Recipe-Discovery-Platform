@@ -1,4 +1,5 @@
 ## Requirements
+Leverage the free recipe api at https://www.themealdb.com/api.php to source recipes. 
 
 ### Data Model
 - **Recipe**: ID, Name, Description, Ingredients (list), Cuisine, Preparation Time, Difficulty Level.

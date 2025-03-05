@@ -4,17 +4,7 @@ Since this repository (`recipe-discovery-challenge`) is private, you can’t for
 
 ---
 
-## Step 1: Accept the Invitation
-1. **Check Your Email**:
-   - You’ve been invited as a collaborator to the private repo: `https://github.com/developer-tii/recipe-discovery-challenge`.
-   - Look for an email from GitHub titled “Invitation to collaborate on yourusername/recipe-discovery-challenge.”
-2. **Accept the Invite**:
-   - Click the link in the email, sign into GitHub, and accept the invitation.
-   - You’ll gain read access to the repo.
-
----
-
-## Step 2: Clone the Repository Locally
+## Step 1: Clone the Repository Locally
 You’ll need to download the challenge files to your computer.
 
 1. **Get the Clone URL**:
@@ -34,7 +24,7 @@ You’ll need to download the challenge files to your computer.
     ```bash
     cd recipe-discovery-challenge
 
-## Step 3: Create Your Own Private Repository
+## Step 2: Create Your Own Private Repository
 Create a new private repo under your GitHub account to host your solution.
 
 1. **Log in to GitHub:**
@@ -50,7 +40,7 @@ Create a new private repo under your GitHub account to host your solution.
     - On your new repo’s page (e.g., https://github.com/yourusername/recipe-discovery-solution), click the green Code button.
     - Copy the HTTPS URL (e.g., https://github.com/yourusername/recipe-discovery-solution.git).
 
-## Step 4: Push the Cloned Code to Your New Repo
+## Step 3: Push the Cloned Code to Your New Repo
 Update the local clone's remote to point to your new repo and push the initial code.
 
 1. **Check the Current Remote:**
@@ -70,9 +60,9 @@ Update the local clone's remote to point to your new repo and push the initial c
       ```bash
       git push origin main
     - Refresh your GitHub repo page to confirm the files (e.g., README.md) are uploaded.
-## Step 5: Work on your solution
+## Step 4: Work on your solution
 
-## Step 6: Share your solution with us
+## Step 5: Share your solution with us
 Invite me as a collaborator to your private repo so we can review your work.
 
 1. **Go to your Repo Settings:**
@@ -87,7 +77,7 @@ Invite me as a collaborator to your private repo so we can review your work.
 4. **Notify me:**
     - Send me an email letting me know you have completed the challenge and have invited me as a collaborator. 
 
-## Step 7: Verify your Submission
+## Step 6: Verify your Submission
     - Ensure your repo includes all deliverables:
         - Source Code.
         - Updated README.md with setup instructions and a sample GraphQL query/mutation.
