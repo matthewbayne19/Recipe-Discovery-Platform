@@ -165,6 +165,25 @@
           "build/HotChocolate.AspNetCore.targets": {}
         }
       },
+      "HotChocolate.AspNetCore.Authorization/15.0.3": {
+        "type": "package",
+        "dependencies": {
+          "HotChocolate": "15.0.3"
+        },
+        "compile": {
+          "lib/net9.0/HotChocolate.AspNetCore.Authorization.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/HotChocolate.AspNetCore.Authorization.dll": {
+            "related": ".xml"
+          }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      },
       "HotChocolate.Authorization/15.0.3": {
         "type": "package",
         "dependencies": {
@@ -196,6 +215,31 @@
           "lib/net9.0/HotChocolate.CostAnalysis.dll": {
             "related": ".xml"
           }
+        }
+      },
+      "HotChocolate.Data/15.0.3": {
+        "type": "package",
+        "dependencies": {
+          "GreenDonut.Data": "15.0.3",
+          "GreenDonut.Data.Abstractions": "15.0.3",
+          "GreenDonut.Data.Primitives": "15.0.3",
+          "HotChocolate.Execution": "15.0.3",
+          "HotChocolate.Execution.Projections": "15.0.3",
+          "HotChocolate.Types.CursorPagination": "15.0.3"
+        },
+        "compile": {
+          "lib/net9.0/HotChocolate.Data.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/HotChocolate.Data.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "build/HotChocolate.Data.props": {},
+          "build/HotChocolate.Data.targets": {}
         }
       },
       "HotChocolate.Execution/15.0.3": {
@@ -965,6 +1009,25 @@
         "strawberryshake-signet.png"
       ]
     },
+    "HotChocolate.AspNetCore.Authorization/15.0.3": {
+      "sha512": "J6u8OcMuNOTHlsLnGjC89jpI6zHs/+vjsz3YY7v/Q4m6zLAhpwmSbrZSN4sW5sX6jinsofLN5GLQB+ozm/2tOA==",
+      "type": "package",
+      "path": "hotchocolate.aspnetcore.authorization/15.0.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "greendonut-signet.png",
+        "hotchocolate-signet.png",
+        "hotchocolate.aspnetcore.authorization.15.0.3.nupkg.sha512",
+        "hotchocolate.aspnetcore.authorization.nuspec",
+        "lib/net8.0/HotChocolate.AspNetCore.Authorization.dll",
+        "lib/net8.0/HotChocolate.AspNetCore.Authorization.xml",
+        "lib/net9.0/HotChocolate.AspNetCore.Authorization.dll",
+        "lib/net9.0/HotChocolate.AspNetCore.Authorization.xml",
+        "strawberryshake-signet.png"
+      ]
+    },
     "HotChocolate.Authorization/15.0.3": {
       "sha512": "LELtgi+uqqFmIaS/FzKZpMqTvuAhQ58gONFCIOjZXMflUW5O8lPimjU8Re6gsF7Qt53/d4O1cWUZey1H4yE+cQ==",
       "type": "package",
@@ -1000,6 +1063,27 @@
         "lib/net8.0/HotChocolate.CostAnalysis.xml",
         "lib/net9.0/HotChocolate.CostAnalysis.dll",
         "lib/net9.0/HotChocolate.CostAnalysis.xml",
+        "strawberryshake-signet.png"
+      ]
+    },
+    "HotChocolate.Data/15.0.3": {
+      "sha512": "kD8jzn0am1DlVR4rIcP+LcydF1yCumnoQnpuIywnvhi7KcLWtbkLXA+uyuSGjMwQlSHrh82fTzpyLKjt6qL1mw==",
+      "type": "package",
+      "path": "hotchocolate.data/15.0.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "build/HotChocolate.Data.props",
+        "build/HotChocolate.Data.targets",
+        "greendonut-signet.png",
+        "hotchocolate-signet.png",
+        "hotchocolate.data.15.0.3.nupkg.sha512",
+        "hotchocolate.data.nuspec",
+        "lib/net8.0/HotChocolate.Data.dll",
+        "lib/net8.0/HotChocolate.Data.xml",
+        "lib/net9.0/HotChocolate.Data.dll",
+        "lib/net9.0/HotChocolate.Data.xml",
         "strawberryshake-signet.png"
       ]
     },
@@ -1752,6 +1836,8 @@
   "projectFileDependencyGroups": {
     "net9.0": [
       "HotChocolate.AspNetCore >= 15.0.3",
+      "HotChocolate.AspNetCore.Authorization >= 15.0.3",
+      "HotChocolate.Data >= 15.0.3",
       "Microsoft.AspNetCore.OpenApi >= 9.0.2"
     ]
   },
@@ -1799,6 +1885,14 @@
         "targetAlias": "net9.0",
         "dependencies": {
           "HotChocolate.AspNetCore": {
+            "target": "Package",
+            "version": "[15.0.3, )"
+          },
+          "HotChocolate.AspNetCore.Authorization": {
+            "target": "Package",
+            "version": "[15.0.3, )"
+          },
+          "HotChocolate.Data": {
             "target": "Package",
             "version": "[15.0.3, )"
           },

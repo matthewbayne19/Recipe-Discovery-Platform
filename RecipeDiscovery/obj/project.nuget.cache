@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "GDPioScKaGQ=",
+  "dgSpecHash": "M23Bs8w1WP0=",
   "success": true,
   "projectFilePath": "C:\\Users\\Matthew Bayne\\TII-Coding-Challenge\\recipe-discovery-challenge\\RecipeDiscovery\\RecipeDiscovery.csproj",
   "expectedPackageFiles": [
@@ -13,8 +13,10 @@
     "C:\\Users\\Matthew Bayne\\.nuget\\packages\\hotchocolate\\15.0.3\\hotchocolate.15.0.3.nupkg.sha512",
     "C:\\Users\\Matthew Bayne\\.nuget\\packages\\hotchocolate.abstractions\\15.0.3\\hotchocolate.abstractions.15.0.3.nupkg.sha512",
     "C:\\Users\\Matthew Bayne\\.nuget\\packages\\hotchocolate.aspnetcore\\15.0.3\\hotchocolate.aspnetcore.15.0.3.nupkg.sha512",
+    "C:\\Users\\Matthew Bayne\\.nuget\\packages\\hotchocolate.aspnetcore.authorization\\15.0.3\\hotchocolate.aspnetcore.authorization.15.0.3.nupkg.sha512",
     "C:\\Users\\Matthew Bayne\\.nuget\\packages\\hotchocolate.authorization\\15.0.3\\hotchocolate.authorization.15.0.3.nupkg.sha512",
     "C:\\Users\\Matthew Bayne\\.nuget\\packages\\hotchocolate.costanalysis\\15.0.3\\hotchocolate.costanalysis.15.0.3.nupkg.sha512",
+    "C:\\Users\\Matthew Bayne\\.nuget\\packages\\hotchocolate.data\\15.0.3\\hotchocolate.data.15.0.3.nupkg.sha512",
     "C:\\Users\\Matthew Bayne\\.nuget\\packages\\hotchocolate.execution\\15.0.3\\hotchocolate.execution.15.0.3.nupkg.sha512",
     "C:\\Users\\Matthew Bayne\\.nuget\\packages\\hotchocolate.execution.abstractions\\15.0.3\\hotchocolate.execution.abstractions.15.0.3.nupkg.sha512",
     "C:\\Users\\Matthew Bayne\\.nuget\\packages\\hotchocolate.execution.projections\\15.0.3\\hotchocolate.execution.projections.15.0.3.nupkg.sha512",

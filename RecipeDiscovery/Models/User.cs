@@ -1,3 +1,6 @@
+//this file is the data model for the recipe
+//consists of all the data points related to a recipe
+
 namespace RecipeDiscovery.Models
 {
     public class User
