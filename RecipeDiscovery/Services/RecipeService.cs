@@ -35,5 +35,34 @@ namespace RecipeDiscovery.Services
                 DifficultyLevel = "Unknown" //API does not provide this, set a default value
             }).ToList();
         }
+
+        public async Task<Recipe?> GetRecipeByIdAsync(string id)
+        {
+            string apiUrl = $"https://www.themealdb.com/api/json/v1/1/lookup.php?i={id}";
+            var response = await _httpClient.GetStringAsync(apiUrl);
+            var json = JsonDocument.Parse(response);
+
+            var meals = json.RootElement.GetProperty("meals");
+
+            if (meals.ValueKind == JsonValueKind.Null)
+                return null;
+
+            var meal = meals.EnumerateArray().FirstOrDefault();
+
+            if (meal.ValueKind == JsonValueKind.Undefined)
+                return null;
+
+            return new Recipe
+            {
+                Id = meal.GetProperty("idMeal").GetString() ?? "",
+                Name = meal.GetProperty("strMeal").GetString() ?? "",
+                Description = meal.GetProperty("strInstructions").GetString() ?? "",
+                Ingredients = new List<string> { meal.GetProperty("strIngredient1").GetString() ?? "" },
+                Cuisine = meal.GetProperty("strArea").GetString() ?? "",
+                PreparationTime = "Unknown", // Default value
+                DifficultyLevel = "Unknown" // Default value
+            };
+        }
+
     }
 }

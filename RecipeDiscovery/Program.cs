@@ -1,21 +1,32 @@
-using RecipeDiscovery.GraphQL;
 using RecipeDiscovery.Services;
-using HotChocolate;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Register the services
-builder.Services.AddHttpClient<IRecipeService, RecipeService>();
-builder.Services.AddSingleton<Query>();
+// Add services to the container
+builder.Services.AddControllers(); // Enables API controllers
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-// Configure GraphQL
-builder.Services
-    .AddGraphQLServer()
-    .AddQueryType<Query>();  // Register Query type
+// Register RecipeService with dependency injection
+builder.Services.AddHttpClient<IRecipeService, RecipeService>();
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
-app.MapGraphQL();  // Maps the GraphQL endpoint
+// Configure the HTTP request pipeline
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseRouting();
+
+app.UseAuthorization();
+
+app.MapControllers(); // Maps controllers to endpoints
 
 app.Run();

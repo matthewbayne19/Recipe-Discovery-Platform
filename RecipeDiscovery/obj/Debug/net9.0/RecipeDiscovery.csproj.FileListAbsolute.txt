@@ -46,6 +46,9 @@ C:\Users\Matthew Bayne\TII-Coding-Challenge\recipe-discovery-challenge\RecipeDis
 C:\Users\Matthew Bayne\TII-Coding-Challenge\recipe-discovery-challenge\RecipeDiscovery\bin\Debug\net9.0\HotChocolate.Validation.dll
 C:\Users\Matthew Bayne\TII-Coding-Challenge\recipe-discovery-challenge\RecipeDiscovery\bin\Debug\net9.0\Microsoft.AspNetCore.OpenApi.dll
 C:\Users\Matthew Bayne\TII-Coding-Challenge\recipe-discovery-challenge\RecipeDiscovery\bin\Debug\net9.0\Microsoft.OpenApi.dll
+C:\Users\Matthew Bayne\TII-Coding-Challenge\recipe-discovery-challenge\RecipeDiscovery\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Matthew Bayne\TII-Coding-Challenge\recipe-discovery-challenge\RecipeDiscovery\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Matthew Bayne\TII-Coding-Challenge\recipe-discovery-challenge\RecipeDiscovery\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 C:\Users\Matthew Bayne\TII-Coding-Challenge\recipe-discovery-challenge\RecipeDiscovery\bin\Debug\net9.0\System.IO.Hashing.dll
 C:\Users\Matthew Bayne\TII-Coding-Challenge\recipe-discovery-challenge\RecipeDiscovery\bin\Debug\net9.0\Yarp.ReverseProxy.dll
 C:\Users\Matthew Bayne\TII-Coding-Challenge\recipe-discovery-challenge\RecipeDiscovery\obj\Debug\net9.0\RecipeDiscovery.csproj.AssemblyReference.cache
