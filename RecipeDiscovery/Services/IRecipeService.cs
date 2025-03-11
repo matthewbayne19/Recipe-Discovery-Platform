@@ -4,10 +4,11 @@ namespace RecipeDiscovery.Services
 {
     public interface IRecipeService
     {
-        //method to get all recipes with the option to filter by cuisine
+        // Method to get all recipes with the option to filter by cuisine
         Task<List<Recipe>> GetAllRecipes(string query);
 
-        //method to get a recipe by id
+        // Method to get a recipe by ID
         Task<Recipe?> GetRecipeById(string id);
+
     }
 }

@@ -4,10 +4,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;  // Added for Swagger API key configuration
-using RecipeDiscovery.Middleware; // Added this to include ApiKeyMiddleware
+using Microsoft.OpenApi.Models;
+using RecipeDiscovery.Middleware;
 
-// Make class accessible to test project
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("RecipeDiscovery.Tests")]
 public class Program
 {
@@ -16,13 +15,12 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container
-        builder.Services.AddControllers(); 
+        builder.Services.AddControllers();
 
         // Enables API controllers
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(c =>
         {
-            // Configure Swagger to accept the API Key header for both REST and GraphQL
             c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,
@@ -46,7 +44,6 @@ public class Program
                 }
             });
 
-            // Enable passing the API key in GraphQL requests
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,
@@ -71,22 +68,13 @@ public class Program
             });
         });
 
-        /* 
-        Register RecipeService with dependency injection
-        Why AddHttpClient() for IRecipeService: IRecipeService interacts with an external API (TheMealDB) to fetch data. 
-        Since HttpClient is designed to be reused for making HTTP requests (instead of creating a new instance for each call), 
-        we use AddHttpClient() to register IRecipeService and configure an HttpClient to be injected into it. 
-        */
-        builder.Services.AddHttpClient<IRecipeService, RecipeService>();
+        // Register services with correct lifetimes
+        builder.Services.AddSingleton<IRecipeService, RecipeService>(); 
+        builder.Services.AddSingleton<IUserService, UserService>(); 
+        builder.Services.AddSingleton<IEnrichmentService, EnrichmentService>(); 
 
-        /* 
-        Register UserService with dependency injection
-        IUserService is a service that we want to have a single instance for the lifetime of the application. Since it manages user data 
-        and does not need to be re-created for each request, we use AddSingleton(). It ensures that there is a single instance of UserService 
-        throughout the application lifecycle, which is efficient when dealing with stateful services or services that don't need to be 
-        recreated per request.
-        */
-        builder.Services.AddSingleton<IUserService, UserService>();
+        // Register HttpClient for RecipeService
+        builder.Services.AddHttpClient<IRecipeService, RecipeService>();
 
         // Register GraphQL services
         builder.Services
@@ -106,7 +94,7 @@ public class Program
         app.UseRouting();
 
         // Apply the middleware to check API key for every request
-        app.UseMiddleware<ApiKeyMiddleware>(); // This is where the middleware is applied, no need to register it in services
+        app.UseMiddleware<ApiKeyMiddleware>(); // Middleware applied here
 
         app.UseAuthorization();
 

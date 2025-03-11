@@ -1,5 +1,4 @@
-//this file is the data model for the recipe
-//consists of all the data points related to a recipe
+using System.Collections.Generic;
 
 namespace RecipeDiscovery.Models
 {
@@ -12,5 +11,6 @@ namespace RecipeDiscovery.Models
         public string Cuisine { get; set; } = string.Empty;
         public string PreparationTime { get; set; } = string.Empty;
         public string DifficultyLevel { get; set; } = string.Empty;
+        public Nutrition Nutrition { get; set; } = new Nutrition();
     }
 }

@@ -1,19 +1,24 @@
 using System.Net.Http;
 using System.Text.Json;
 using RecipeDiscovery.Models;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace RecipeDiscovery.Services
 {
     public class RecipeService : IRecipeService
     {
         private readonly HttpClient _httpClient;
+        private readonly IEnrichmentService _enrichmentService;
         private const string ApiUrl = "https://www.themealdb.com/api/json/v1/1/search.php?s=";
 
-        public RecipeService(HttpClient httpClient)
+        public RecipeService(HttpClient httpClient, IEnrichmentService enrichmentService)
         {
             _httpClient = httpClient;
+            _enrichmentService = enrichmentService;
         }
 
+        // Fetch basic recipe data only
         public async Task<List<Recipe>> GetAllRecipes(string query)
         {
             var response = await _httpClient.GetStringAsync(ApiUrl + query);
@@ -24,27 +29,33 @@ namespace RecipeDiscovery.Services
             if (meals.ValueKind == JsonValueKind.Null)
                 return new List<Recipe>();
 
-            return meals.EnumerateArray().Select(meal => new Recipe
+            var recipes = meals.EnumerateArray().Select(meal => new Recipe
             {
                 Id = meal.GetProperty("idMeal").GetString() ?? "",
                 Name = meal.GetProperty("strMeal").GetString() ?? "",
                 Description = meal.GetProperty("strInstructions").GetString() ?? "",
-                Ingredients = new List<string> { meal.GetProperty("strIngredient1").GetString() ?? "" }, 
-                Cuisine = meal.GetProperty("strArea").GetString() ?? "", 
-                PreparationTime = "Unknown", //API does not provide this, set a default value
-                DifficultyLevel = "Unknown" //API does not provide this, set a default value
+                Ingredients = new List<string> { meal.GetProperty("strIngredient1").GetString() ?? "" },
+                Cuisine = meal.GetProperty("strArea").GetString() ?? "",
+                // Do not set PreparationTime and DifficultyLevel here
             }).ToList();
+
+            // Enrich recipes with nutrition, preparation time, and difficulty level
+            foreach (var recipe in recipes)
+            {
+                await _enrichmentService.Enrich(recipe);
+            }
+
+            return recipes;
         }
 
+        // Fetch basic recipe by ID only
         public async Task<Recipe?> GetRecipeById(string id)
         {
-            // Validate that the ID is exactly 5 digits and numeric
             if (string.IsNullOrEmpty(id) || id.Length != 5 || !id.All(char.IsDigit))
             {
                 return null; // Invalid ID format
             }
 
-            // Proceed with the API call only if the ID is valid
             string apiUrl = $"https://www.themealdb.com/api/json/v1/1/lookup.php?i={id}";
             var response = await _httpClient.GetStringAsync(apiUrl);
             var json = JsonDocument.Parse(response);
@@ -52,23 +63,27 @@ namespace RecipeDiscovery.Services
             var meals = json.RootElement.GetProperty("meals");
 
             if (meals.ValueKind == JsonValueKind.Null)
-                return null; // No meals found, return null
+                return null;
 
             var meal = meals.EnumerateArray().FirstOrDefault();
 
             if (meal.ValueKind == JsonValueKind.Undefined)
-                return null; // No meal data found, return null
+                return null;
 
-            return new Recipe
+            var recipe = new Recipe
             {
                 Id = meal.GetProperty("idMeal").GetString() ?? "",
                 Name = meal.GetProperty("strMeal").GetString() ?? "",
                 Description = meal.GetProperty("strInstructions").GetString() ?? "",
                 Ingredients = new List<string> { meal.GetProperty("strIngredient1").GetString() ?? "" },
                 Cuisine = meal.GetProperty("strArea").GetString() ?? "",
-                PreparationTime = "Unknown", // Default value
-                DifficultyLevel = "Unknown" // Default value
+                // Do not set PreparationTime and DifficultyLevel here
             };
+
+            // Enrich the recipe with missing data (preparation time, difficulty, nutrition)
+            await _enrichmentService.Enrich(recipe);
+
+            return recipe;
         }
     }
 }

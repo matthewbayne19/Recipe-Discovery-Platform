@@ -10,14 +10,16 @@ namespace RecipeDiscovery.GraphQL
     {
         private readonly IRecipeService _recipeService;
         private readonly IUserService _userService;
+        private readonly IEnrichmentService _enrichmentService;
 
-        public Query(IRecipeService recipeService, IUserService userService)
+        public Query(IRecipeService recipeService, IUserService userService, IEnrichmentService enrichmentService)
         {
             _recipeService = recipeService;
             _userService = userService;
+            _enrichmentService = enrichmentService;
         }
 
-        // Query to get all recipes with optional filters and pagination
+        // Fetch all recipes with enrichment data (nutrition, preparation time, difficulty)
         public async Task<List<Recipe>> GetRecipes(
             string? cuisine = null,
             string? ingredient = null,
@@ -30,23 +32,26 @@ namespace RecipeDiscovery.GraphQL
             // Fetch all recipes
             var recipes = await _recipeService.GetAllRecipes("");
 
-            // Apply cuisine filter if specified
+            // Enrich the recipes with mock data (nutrition, preparation time, difficulty)
+            foreach (var recipe in recipes)
+            {
+                await _enrichmentService.Enrich(recipe);
+            }
+
+            // Apply filters, sorting, and pagination (same as before)
             if (!string.IsNullOrEmpty(cuisine))
             {
                 recipes = recipes.Where(r => r.Cuisine.Equals(cuisine, System.StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            // Apply ingredient filter if specified
             if (!string.IsNullOrEmpty(ingredient))
             {
                 recipes = recipes.Where(r => r.Ingredients != null &&
                     r.Ingredients.Any(i => i.Contains(ingredient, System.StringComparison.OrdinalIgnoreCase))).ToList();
             }
 
-            // Apply sorting if sortBy is specified
             if (!string.IsNullOrEmpty(sortBy))
             {
-                // Check the sortBy field and apply the corresponding sorting logic
                 if (sortBy.ToLower() == "name")
                 {
                     recipes = order.ToLower() == "desc"
@@ -67,33 +72,36 @@ namespace RecipeDiscovery.GraphQL
                 }
                 else
                 {
-                    // If the sortBy doesn't match any predefined fields, fallback to sorting by name
                     recipes = order.ToLower() == "desc"
                         ? recipes.OrderByDescending(r => r.Name).ToList()
                         : recipes.OrderBy(r => r.Name).ToList();
                 }
             }
 
-            // Apply pagination: Skip the results for previous pages and take the pageSize number of recipes
+            // Apply pagination
             var pagedRecipes = recipes.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-            // Return the filtered, sorted, and paginated list of recipes
             return pagedRecipes;
         }
-        
-        // Fetch a single recipe by ID
+
+        // Fetch a single recipe by ID and enrich it
         public async Task<Recipe?> GetRecipeById(string id)
         {
-            return await _recipeService.GetRecipeById(id);
+            var recipe = await _recipeService.GetRecipeById(id);
+            
+            if (recipe != null)
+            {
+                // Enrich the recipe with mock data
+                await _enrichmentService.Enrich(recipe);
+            }
+
+            return recipe;
         }
 
         // Fetch a user's favorite recipes
         public async Task<List<Recipe>> GetUserFavorites(string userId)
         {
-            // Fetch the user's favorite recipes using the userService
             var favorites = await _userService.GetUserFavorites(userId);
-
-            // Return the list of favorite recipes
             return favorites;
         }
     }
