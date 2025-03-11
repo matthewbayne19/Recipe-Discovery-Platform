@@ -11,6 +11,7 @@ namespace RecipeDiscovery.Tests
     public class GraphQLTests : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly HttpClient _client;
+        private const string ApiKey = "simple-api-key";
 
         public GraphQLTests(WebApplicationFactory<Program> factory)
         {
@@ -35,7 +36,10 @@ namespace RecipeDiscovery.Tests
             var jsonRequest = JsonConvert.SerializeObject(requestContent);
             var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-            // Make the POST request to the GraphQL endpoint
+            // Add the API key to the request headers for mutation
+            _client.DefaultRequestHeaders.Add("X-API-KEY", ApiKey);
+
+            // Make the POST request to the GraphQL endpoint for the mutation
             var response = await _client.PostAsync("/graphql", content);
             response.EnsureSuccessStatusCode();  // Ensure the status is OK
 
