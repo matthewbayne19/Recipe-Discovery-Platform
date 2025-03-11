@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;  // Added for Swagger API key configuration
+using RecipeDiscovery.Middleware;  // Added namespace for ApiKeyMiddleware
 
 // Make class accessible to test project
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("RecipeDiscovery.Tests")]
@@ -14,11 +16,35 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container
-        builder.Services.AddControllers(); 
+        builder.Services.AddControllers();
 
         // Enables API controllers
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerGen(c =>
+        {
+            // Configure Swagger to accept the API Key header
+            c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
+            {
+                In = ParameterLocation.Header,
+                Name = "X-API-KEY", // The header name used to pass the API key
+                Type = SecuritySchemeType.ApiKey,
+                Description = "Please enter your API key"
+            });
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "ApiKey"
+                        }
+                    },
+                    new string[] { }
+                }
+            });
+        });
 
         /* 
         Register RecipeService with dependency injection
@@ -53,6 +79,9 @@ public class Program
         }
 
         app.UseRouting();
+
+        // Use the API Key middleware to validate API keys before reaching controllers
+        app.UseMiddleware<ApiKeyMiddleware>();  
 
         app.UseAuthorization();
 
