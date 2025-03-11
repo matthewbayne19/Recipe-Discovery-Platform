@@ -17,28 +17,70 @@ namespace RecipeDiscovery.GraphQL
             _userService = userService;
         }
 
-        // Fetch all recipes with optional filters (cuisine and ingredient)
-        public async Task<List<Recipe>> GetRecipes(string? cuisine = null, string? ingredient = null)
+        // Query to get all recipes with optional filters and pagination
+        public async Task<List<Recipe>> GetRecipes(
+            string? cuisine = null,
+            string? ingredient = null,
+            string? sortBy = null,
+            string order = "asc", // Default order is ascending
+            int page = 1,        // Default page is 1
+            int pageSize = 10    // Default page size is 10
+        )
         {
-            // Fetch all recipes from the RecipeService
+            // Fetch all recipes
             var recipes = await _recipeService.GetAllRecipes("");
 
-            // Filter recipes by cuisine if provided
+            // Apply cuisine filter if specified
             if (!string.IsNullOrEmpty(cuisine))
             {
                 recipes = recipes.Where(r => r.Cuisine.Equals(cuisine, System.StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            // Filter recipes by ingredient if provided
+            // Apply ingredient filter if specified
             if (!string.IsNullOrEmpty(ingredient))
             {
-                recipes = recipes.Where(r => r.Ingredients != null && r.Ingredients.Any(i => i.Contains(ingredient, System.StringComparison.OrdinalIgnoreCase))).ToList();
+                recipes = recipes.Where(r => r.Ingredients != null &&
+                    r.Ingredients.Any(i => i.Contains(ingredient, System.StringComparison.OrdinalIgnoreCase))).ToList();
             }
 
-            // Return the filtered list of recipes
-            return recipes;
-        }
+            // Apply sorting if sortBy is specified
+            if (!string.IsNullOrEmpty(sortBy))
+            {
+                // Check the sortBy field and apply the corresponding sorting logic
+                if (sortBy.ToLower() == "name")
+                {
+                    recipes = order.ToLower() == "desc"
+                        ? recipes.OrderByDescending(r => r.Name).ToList()
+                        : recipes.OrderBy(r => r.Name).ToList();
+                }
+                else if (sortBy.ToLower() == "cuisine")
+                {
+                    recipes = order.ToLower() == "desc"
+                        ? recipes.OrderByDescending(r => r.Cuisine).ToList()
+                        : recipes.OrderBy(r => r.Cuisine).ToList();
+                }
+                else if (sortBy.ToLower() == "preparationtime")
+                {
+                    recipes = order.ToLower() == "desc"
+                        ? recipes.OrderByDescending(r => r.PreparationTime).ToList()
+                        : recipes.OrderBy(r => r.PreparationTime).ToList();
+                }
+                else
+                {
+                    // If the sortBy doesn't match any predefined fields, fallback to sorting by name
+                    recipes = order.ToLower() == "desc"
+                        ? recipes.OrderByDescending(r => r.Name).ToList()
+                        : recipes.OrderBy(r => r.Name).ToList();
+                }
+            }
 
+            // Apply pagination: Skip the results for previous pages and take the pageSize number of recipes
+            var pagedRecipes = recipes.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            // Return the filtered, sorted, and paginated list of recipes
+            return pagedRecipes;
+        }
+        
         // Fetch a single recipe by ID
         public async Task<Recipe?> GetRecipeById(string id)
         {

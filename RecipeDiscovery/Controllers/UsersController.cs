@@ -55,6 +55,12 @@ namespace RecipeDiscovery.Controllers
                 return BadRequest("Recipe ID is required.");
             }
 
+            // Validate the recipe ID format (should be a 5-digit number)
+            if (payload.RecipeId.Length != 5 || !payload.RecipeId.All(char.IsDigit))
+            {
+                return BadRequest("Invalid recipe ID.");
+            }
+
             // Check if the recipe exists before adding to favorites
             var recipe = await _recipeService.GetRecipeById(payload.RecipeId);
             if (recipe == null)
@@ -64,7 +70,7 @@ namespace RecipeDiscovery.Controllers
 
             // Check if the recipe is already in the user's favorites
             var favorites = await _userService.GetUserFavorites(userId);
-            if (favorites.Any(f => f.Id == payload.RecipeId)) // Fix: Compare Recipe Ids
+            if (favorites.Any(f => f.Id == payload.RecipeId)) // Compare Recipe Ids
             {
                 return Ok(new { message = "Recipe is already in favorites." });
             }
