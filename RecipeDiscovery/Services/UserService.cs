@@ -34,7 +34,7 @@ namespace RecipeDiscovery.Services
                 return favoriteRecipes;
             }
 
-            return new List<Recipe>();
+            return new List<Recipe>(); //return empty list, bad API practice to change response structure based on content (ie. adding no favs message)
         }
 
         // Add a recipe to a user's favorites

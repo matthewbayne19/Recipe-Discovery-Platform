@@ -44,16 +44,21 @@ namespace RecipeDiscovery.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Recipe>> GetRecipeById(string id) // Async method
+        public async Task<IActionResult> GetRecipeById(string id)
         {
-            var recipe = await _recipeService.GetRecipeById(id); // Call async method
+            var recipe = await _recipeService.GetRecipeById(id);
+
+            if (string.IsNullOrEmpty(id) || id.Length != 5 || !id.All(char.IsDigit))
+            {
+                return BadRequest("Invalid recipe ID");
+            }
 
             if (recipe == null)
             {
-                return NotFound(new { message = "Recipe not found" });
+                return NotFound("Recipe not found");
             }
 
-            return Ok(recipe); // Return the recipe
+            return Ok(recipe);
         }
     }
 }

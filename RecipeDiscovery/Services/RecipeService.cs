@@ -38,6 +38,13 @@ namespace RecipeDiscovery.Services
 
         public async Task<Recipe?> GetRecipeById(string id)
         {
+            // Validate that the ID is exactly 5 digits and numeric
+            if (string.IsNullOrEmpty(id) || id.Length != 5 || !id.All(char.IsDigit))
+            {
+                return null; // Invalid ID format
+            }
+
+            // Proceed with the API call only if the ID is valid
             string apiUrl = $"https://www.themealdb.com/api/json/v1/1/lookup.php?i={id}";
             var response = await _httpClient.GetStringAsync(apiUrl);
             var json = JsonDocument.Parse(response);
@@ -45,12 +52,12 @@ namespace RecipeDiscovery.Services
             var meals = json.RootElement.GetProperty("meals");
 
             if (meals.ValueKind == JsonValueKind.Null)
-                return null;
+                return null; // No meals found, return null
 
             var meal = meals.EnumerateArray().FirstOrDefault();
 
             if (meal.ValueKind == JsonValueKind.Undefined)
-                return null;
+                return null; // No meal data found, return null
 
             return new Recipe
             {
@@ -63,6 +70,5 @@ namespace RecipeDiscovery.Services
                 DifficultyLevel = "Unknown" // Default value
             };
         }
-
     }
 }
