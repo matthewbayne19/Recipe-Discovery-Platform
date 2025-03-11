@@ -1,15 +1,15 @@
 ﻿using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using RecipeDiscovery;
 using Microsoft.AspNetCore.Mvc.Testing;
 
-public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
+public class RestApiTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly HttpClient _client;
-    private readonly string _testUserId = "11111111-1111-1111-1111-111111111111"; // Replace with a valid GUID
 
-    public ApiTests(WebApplicationFactory<Program> factory)
+    public RestApiTests(WebApplicationFactory<Program> factory)
     {
         _client = factory.CreateClient();
     }
