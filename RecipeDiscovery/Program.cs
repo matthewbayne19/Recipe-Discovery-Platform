@@ -1,4 +1,5 @@
 using RecipeDiscovery.Services;
+using RecipeDiscovery.GraphQL;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +11,6 @@ public class Program
 {
     public static void Main(string[] args)
     {
-
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container
@@ -37,6 +37,12 @@ public class Program
         */
         builder.Services.AddSingleton<IUserService, UserService>();
 
+        // Register GraphQL services
+        builder.Services
+            .AddGraphQLServer()
+            .AddQueryType<Query>()  // Register GraphQL queries
+            .AddMutationType<Mutation>(); // Register GraphQL mutations
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline
@@ -52,6 +58,9 @@ public class Program
 
         // Maps controllers to endpoints
         app.MapControllers();
+
+        // Maps GraphQL endpoint
+        app.MapGraphQL();
 
         app.Run();
     }

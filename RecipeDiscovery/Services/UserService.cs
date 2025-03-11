@@ -4,29 +4,37 @@ namespace RecipeDiscovery.Services
 {
     public class UserService : IUserService
     {
-        // Mocked in-memory store for user favorites
         private readonly Dictionary<string, List<string>> userFavorites = new();
+        private readonly IRecipeService _recipeService;
+
+        public UserService(IRecipeService recipeService)
+        {
+            _recipeService = recipeService;
+        }
 
         // Get favorite recipes for a user
-        public Task<List<Recipe>> GetUserFavorites(string userId)
+        public async Task<List<Recipe>> GetUserFavorites(string userId)
         {
             if (userFavorites.ContainsKey(userId))
             {
                 // Get the list of favorite recipe IDs and fetch their details
                 var favoriteRecipeIds = userFavorites[userId];
-                var favorites = favoriteRecipeIds.Select(id => new Recipe
+                var favoriteRecipes = new List<Recipe>();
+
+                // Fetch full details for each favorite recipe ID
+                foreach (var recipeId in favoriteRecipeIds)
                 {
-                    Id = id,
-                    Name = $"Recipe {id}", // Placeholder, replace with actual fetch logic
-                    Description = $"Description for {id}",
-                    Ingredients = new List<string>(), // Placeholder
-                    Cuisine = "Unknown", // Placeholder
-                    PreparationTime = "Unknown", // Placeholder
-                    DifficultyLevel = "Unknown" // Placeholder
-                }).ToList();
-                return Task.FromResult(favorites);
+                    var recipe = await _recipeService.GetRecipeById(recipeId);
+                    if (recipe != null)
+                    {
+                        favoriteRecipes.Add(recipe); // Add the complete recipe to the list
+                    }
+                }
+
+                return favoriteRecipes;
             }
-            return Task.FromResult(new List<Recipe>());
+
+            return new List<Recipe>();
         }
 
         // Add a recipe to a user's favorites
