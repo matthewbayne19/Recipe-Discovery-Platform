@@ -14,7 +14,7 @@ namespace RecipeDiscovery.Services
             _httpClient = httpClient;
         }
 
-        public async Task<List<Recipe>> SearchRecipesAsync(string query)
+        public async Task<List<Recipe>> GetAllRecipes(string query)
         {
             var response = await _httpClient.GetStringAsync(ApiUrl + query);
             var json = JsonDocument.Parse(response);
@@ -36,7 +36,7 @@ namespace RecipeDiscovery.Services
             }).ToList();
         }
 
-        public async Task<Recipe?> GetRecipeByIdAsync(string id)
+        public async Task<Recipe?> GetRecipeById(string id)
         {
             string apiUrl = $"https://www.themealdb.com/api/json/v1/1/lookup.php?i={id}";
             var response = await _httpClient.GetStringAsync(apiUrl);

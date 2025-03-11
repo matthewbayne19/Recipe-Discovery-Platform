@@ -20,7 +20,7 @@ namespace RecipeDiscovery.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Recipe>>> GetRecipes([FromQuery] string? cuisine = null)
         {
-            var recipes = await _recipeService.SearchRecipesAsync("");
+            var recipes = await _recipeService.GetAllRecipes("");
 
             if (!string.IsNullOrEmpty(cuisine))
             {
@@ -28,6 +28,19 @@ namespace RecipeDiscovery.Controllers
             }
 
             return Ok(recipes);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Recipe>> GetRecipeById(string id) // Async method
+        {
+            var recipe = await _recipeService.GetRecipeById(id); // Call async method
+
+            if (recipe == null)
+            {
+                return NotFound(new { message = "Recipe not found" });
+            }
+
+            return Ok(recipe); // Return the recipe
         }
     }
 }

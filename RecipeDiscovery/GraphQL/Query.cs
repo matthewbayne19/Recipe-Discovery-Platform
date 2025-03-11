@@ -10,7 +10,7 @@ namespace RecipeDiscovery.GraphQL
         public async Task<List<Recipe>> GetRecipes([Service] IRecipeService recipeService)
         {
             // Call the RecipeService to get the recipes (passing an empty string for now)
-            return await recipeService.SearchRecipesAsync(""); 
+            return await recipeService.GetAllRecipes(""); 
         }
     }
 }
