@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;  // Added for Swagger API key configuration
-using RecipeDiscovery.Middleware;  // Added namespace for ApiKeyMiddleware
+using RecipeDiscovery.Middleware; // Added this to include ApiKeyMiddleware
 
 // Make class accessible to test project
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("RecipeDiscovery.Tests")]
@@ -16,13 +16,13 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container
-        builder.Services.AddControllers();
+        builder.Services.AddControllers(); 
 
         // Enables API controllers
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(c =>
         {
-            // Configure Swagger to accept the API Key header
+            // Configure Swagger to accept the API Key header for both REST and GraphQL
             c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,
@@ -30,6 +30,7 @@ public class Program
                 Type = SecuritySchemeType.ApiKey,
                 Description = "Please enter your API key"
             });
+
             c.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {
@@ -39,6 +40,30 @@ public class Program
                         {
                             Type = ReferenceType.SecurityScheme,
                             Id = "ApiKey"
+                        }
+                    },
+                    new string[] { }
+                }
+            });
+
+            // Enable passing the API key in GraphQL requests
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                In = ParameterLocation.Header,
+                Name = "Authorization", // Authorization header is used for passing tokens in GraphQL
+                Type = SecuritySchemeType.ApiKey,
+                Description = "Bearer {your_api_key}"
+            });
+
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
                         }
                     },
                     new string[] { }
@@ -80,8 +105,8 @@ public class Program
 
         app.UseRouting();
 
-        // Use the API Key middleware to validate API keys before reaching controllers
-        app.UseMiddleware<ApiKeyMiddleware>();  
+        // Apply the middleware to check API key for every request
+        app.UseMiddleware<ApiKeyMiddleware>(); // This is where the middleware is applied, no need to register it in services
 
         app.UseAuthorization();
 
