@@ -5,8 +5,8 @@ namespace RecipeDiscovery.Models
 {
     public class User
     {
-        public int Id { get; set; }
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         public string Username { get; set; } = string.Empty;
-        public List<int> FavoriteRecipes { get; set; } = new();
+        public List<string> FavoriteRecipes { get; set; } = new();
     }
 }
