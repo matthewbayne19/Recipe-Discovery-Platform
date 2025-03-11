@@ -32,7 +32,8 @@ namespace RecipeDiscovery.Controllers
             // Check if the user's favorites list is empty
             if (favorites == null || !favorites.Any())
             {
-                return Ok(new List<string>()); // Return an empty list with OK status - shouldnt be an error to have an empty list (new user)
+                // Return an empty list with OK status - shouldn't be an error to have an empty list (new user)
+                return Ok(new List<string>());
             }
 
             return Ok(favorites);
@@ -40,7 +41,7 @@ namespace RecipeDiscovery.Controllers
 
         // Endpoint to add a recipe to the user's favorites
         [HttpPost("favorites")]
-        public async Task<IActionResult> AddFavorite(string userId, [FromBody] string recipeId)
+        public async Task<IActionResult> AddFavorite(string userId, [FromBody] FavoriteRecipePayload payload)
         {
             // Check to see if we have a user id
             if (string.IsNullOrEmpty(userId))
@@ -49,29 +50,36 @@ namespace RecipeDiscovery.Controllers
             }
 
             // Check to see if we have a recipe id
-            if (string.IsNullOrEmpty(recipeId))
+            if (payload == null || string.IsNullOrEmpty(payload.RecipeId))
             {
                 return BadRequest("Recipe ID is required.");
             }
 
             // Check if the recipe exists before adding to favorites
-            var recipe = await _recipeService.GetRecipeById(recipeId);  
+            var recipe = await _recipeService.GetRecipeById(payload.RecipeId);
             if (recipe == null)
             {
                 return NotFound("Recipe not found.");
             }
 
+            // Check if the recipe is already in the user's favorites
+            var favorites = await _userService.GetUserFavorites(userId);
+            if (favorites.Any(f => f.Id == payload.RecipeId)) // Fix: Compare Recipe Ids
+            {
+                return Ok(new { message = "Recipe is already in favorites." });
+            }
+
             // Proceed to add to favorites
             try
             {
-                await _userService.AddUserFavorite(userId, recipeId);
+                await _userService.AddUserFavorite(userId, payload.RecipeId);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
 
-            return NoContent(); // Successful operation, no content returned
+            return Ok(new { message = "Recipe added to favorites successfully." });
         }
     }
 }
