@@ -3,6 +3,7 @@ using System.Text.Json;
 using RecipeDiscovery.Models;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace RecipeDiscovery.Services
 {
@@ -18,7 +19,6 @@ namespace RecipeDiscovery.Services
             _enrichmentService = enrichmentService;
         }
 
-        // Fetch basic recipe data only
         public async Task<List<Recipe>> GetAllRecipes(string query)
         {
             var response = await _httpClient.GetStringAsync(ApiUrl + query);
@@ -34,12 +34,10 @@ namespace RecipeDiscovery.Services
                 Id = meal.GetProperty("idMeal").GetString() ?? "",
                 Name = meal.GetProperty("strMeal").GetString() ?? "",
                 Description = meal.GetProperty("strInstructions").GetString() ?? "",
-                Ingredients = new List<string> { meal.GetProperty("strIngredient1").GetString() ?? "" },
-                Cuisine = meal.GetProperty("strArea").GetString() ?? "",
-                // Do not set PreparationTime and DifficultyLevel here
+                Ingredients = ExtractIngredientNames(meal), 
+                Cuisine = meal.GetProperty("strArea").GetString() ?? ""
             }).ToList();
 
-            // Enrich recipes with nutrition, preparation time, and difficulty level
             foreach (var recipe in recipes)
             {
                 await _enrichmentService.Enrich(recipe);
@@ -48,12 +46,11 @@ namespace RecipeDiscovery.Services
             return recipes;
         }
 
-        // Fetch basic recipe by ID only
         public async Task<Recipe?> GetRecipeById(string id)
         {
             if (string.IsNullOrEmpty(id) || id.Length != 5 || !id.All(char.IsDigit))
             {
-                return null; // Invalid ID format
+                return null;
             }
 
             string apiUrl = $"https://www.themealdb.com/api/json/v1/1/lookup.php?i={id}";
@@ -75,15 +72,34 @@ namespace RecipeDiscovery.Services
                 Id = meal.GetProperty("idMeal").GetString() ?? "",
                 Name = meal.GetProperty("strMeal").GetString() ?? "",
                 Description = meal.GetProperty("strInstructions").GetString() ?? "",
-                Ingredients = new List<string> { meal.GetProperty("strIngredient1").GetString() ?? "" },
-                Cuisine = meal.GetProperty("strArea").GetString() ?? "",
-                // Do not set PreparationTime and DifficultyLevel here
+                Ingredients = ExtractIngredientNames(meal), 
+                Cuisine = meal.GetProperty("strArea").GetString() ?? ""
             };
 
-            // Enrich the recipe with missing data (preparation time, difficulty, nutrition)
             await _enrichmentService.Enrich(recipe);
 
             return recipe;
+        }
+
+        // Method to extract ingredient names
+        private static List<string> ExtractIngredientNames(JsonElement meal)
+        {
+            var ingredients = new List<string>();
+            for (int i = 1; i <= 20; i++)
+            {
+                string ingredientKey = $"strIngredient{i}";
+
+                if (meal.TryGetProperty(ingredientKey, out JsonElement ingredientElement))
+                {
+                    string ingredient = ingredientElement.GetString() ?? "";
+
+                    if (!string.IsNullOrWhiteSpace(ingredient))
+                    {
+                        ingredients.Add(ingredient);
+                    }
+                }
+            }
+            return ingredients;
         }
     }
 }
