@@ -1,19 +1,4 @@
 ```md
-# Recipe Discovery Platform
-This is a .NET-based Recipe Discovery Platform using GraphQL (HotChocolate) and REST API to fetch and enrich recipes from TheMealDB API.  
-It supports searching, sorting, pagination, user favorites, and API key authentication.
-
-## Setup Instructions
-### Prerequisites
-- .NET SDK installed ([Download here](https://dotnet.microsoft.com/en-us/download))
-- Visual Studio / VS Code recommended
-- Clone this repository:
-  ```bash
-  git clone https://github.com/matthewbayne19/Bayne-Recipe-Discovery-Solution.git
-  cd recipe-discovery-challenge
-  cd RecipeDiscovery
-  ```
-
 ### Running the Project
 1. Install dependencies
    ```bash
@@ -125,14 +110,6 @@ dotnet test --filter FullyQualifiedName=RecipeDiscovery.Tests.GraphQLTests
   - Add a recipe to user favorites (`mutation addFavoriteRecipe`)
   - Fetch user's favorite recipes (`query userFavorites`)
 
-### Debugging Test Failures
-- Ensure the API is running before executing tests.
-- If authentication errors occur (`401 Unauthorized`), verify the **API key** is included in test requests.
-- Run tests in **verbose mode** for more details:
-  ```bash
-  dotnet test --logger "console;verbosity=detailed"
-  ```
-
 ## Explanation of Design Choices
 ### GraphQL Orchestration
 - Part of the GraphQL implementation serves as an orchestration layer, fetching data from TheMealDB and enriching it with additional details like **nutrition, preparation time, and difficulty level**.
@@ -148,7 +125,7 @@ dotnet test --filter FullyQualifiedName=RecipeDiscovery.Tests.GraphQLTests
 - Prevents unauthorized access to the platform.
 
 ### User Favorites
-- Stored in-memory for this implementation (using a dictionary).
+- Stored in-memory for this implementation (using a dictionary). Registered as singleton service to persist data.
 - Only stores recipe IDs to reduce data redundancy.
 
 ### Unit Testing
