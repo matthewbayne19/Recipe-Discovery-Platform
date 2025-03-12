@@ -1,3 +1,18 @@
+# Recipe Discovery Platform
+This is a .NET-based Recipe Discovery Platform using GraphQL (HotChocolate) and REST API to fetch and enrich recipes fromTheMealDB API.  
+It supports searching, sorting, pagination, user favorites, and API key authentication.
+
+## Setup Instructions
+### Prerequisites
+- .NET SDK installed ([Download here](https://dotnet.microsoft.com/en-us/download))
+- Visual Studio / VS Code recommended
+- Clone this repository:
+  ```bash
+  git clone https://github.com/matthewbayne19/Bayne-Recipe-Discovery-Solution.git
+  cd recipe-discovery-challenge
+  cd RecipeDiscovery
+  ```
+
 ### Running the Project
 1. Install dependencies
    ```bash
