@@ -1,4 +1,3 @@
-```md
 ### Running the Project
 1. Install dependencies
    ```bash
