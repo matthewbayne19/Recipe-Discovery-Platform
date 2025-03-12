@@ -22,6 +22,12 @@ namespace RecipeDiscovery.GraphQL
                 return "User ID and Recipe ID are required.";
             }
 
+            // Validate the recipe ID format (should be a 5-digit number)
+            if (recipeId.Length != 5 || !recipeId.All(char.IsDigit))
+            {
+                return "Invalid recipe ID.";
+            }
+
             var recipe = await _recipeService.GetRecipeById(recipeId);
             if (recipe == null)
             {
