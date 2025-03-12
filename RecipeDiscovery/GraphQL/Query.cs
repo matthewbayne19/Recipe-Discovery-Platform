@@ -8,9 +8,9 @@ namespace RecipeDiscovery.GraphQL
 {
     public class Query
     {
-        private readonly IRecipeService _recipeService;
-        private readonly IUserService _userService;
-        private readonly IEnrichmentService _enrichmentService;
+        private readonly IRecipeService _recipeService; // Handles fetching recipes from TheMealDB API
+        private readonly IUserService _userService; // Manages user-related operations like favorites
+        private readonly IEnrichmentService _enrichmentService; // Handles enrichment of recipe data with additional information
 
         public Query(IRecipeService recipeService, IUserService userService, IEnrichmentService enrichmentService)
         {
@@ -19,7 +19,7 @@ namespace RecipeDiscovery.GraphQL
             _enrichmentService = enrichmentService;
         }
 
-        // Fetch all recipes with enrichment data (nutrition, preparation time, difficulty)
+        // Fetch all recipes with optional filtering, sorting, pagination, and enrichment
         public async Task<List<Recipe>> GetRecipes(
             string? cuisine = null,
             string? ingredient = null,
@@ -29,27 +29,29 @@ namespace RecipeDiscovery.GraphQL
             int pageSize = 10    // Default page size is 10
         )
         {
-            // Fetch all recipes
+            // Fetch all recipes from the external API
             var recipes = await _recipeService.GetAllRecipes("");
 
-            // Enrich the recipes with mock data (nutrition, preparation time, difficulty)
+            // Enrich each recipe with mock data for nutrition, preparation time, and difficulty
             foreach (var recipe in recipes)
             {
                 await _enrichmentService.Enrich(recipe);
             }
 
-            // Apply filters, sorting, and pagination (same as before)
+            // Apply cuisine filter if specified
             if (!string.IsNullOrEmpty(cuisine))
             {
                 recipes = recipes.Where(r => r.Cuisine.Equals(cuisine, System.StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
+            // Apply ingredient filter if specified
             if (!string.IsNullOrEmpty(ingredient))
             {
                 recipes = recipes.Where(r => r.Ingredients != null &&
                     r.Ingredients.Any(i => i.Contains(ingredient, System.StringComparison.OrdinalIgnoreCase))).ToList();
             }
 
+            // Apply sorting based on the specified field
             if (!string.IsNullOrEmpty(sortBy))
             {
                 if (sortBy.ToLower() == "name")
@@ -72,19 +74,20 @@ namespace RecipeDiscovery.GraphQL
                 }
                 else
                 {
+                    // Default sorting by name if an unknown field is specified
                     recipes = order.ToLower() == "desc"
                         ? recipes.OrderByDescending(r => r.Name).ToList()
                         : recipes.OrderBy(r => r.Name).ToList();
                 }
             }
 
-            // Apply pagination
+            // Apply pagination: Skip previous pages and take only the requested number of items
             var pagedRecipes = recipes.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
             return pagedRecipes;
         }
 
-        // Fetch a single recipe by ID and enrich it
+        // Fetch a single recipe by ID and enrich it with additional details
         public async Task<Recipe?> GetRecipeById(string id)
         {
             var recipe = await _recipeService.GetRecipeById(id);
@@ -98,7 +101,7 @@ namespace RecipeDiscovery.GraphQL
             return recipe;
         }
 
-        // Fetch a user's favorite recipes
+        // Fetch a user's favorite recipes (returns only recipe IDs)
         public async Task<List<string>> GetUserFavorites(string userId)
         {
             var favorites = await _userService.GetUserFavorites(userId);

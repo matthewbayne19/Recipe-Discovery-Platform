@@ -8,27 +8,27 @@ using System.Threading.Tasks;
 namespace RecipeDiscovery.Controllers
 {
     [ApiController]
-    [Route("recipes")]
+    [Route("recipes")] // Defines the base route for the controller as "/recipes"
     public class RecipeController : ControllerBase
     {
-        private readonly IRecipeService _recipeService;
+        private readonly IRecipeService _recipeService; // Service dependency for handling recipe-related logic
 
         public RecipeController(IRecipeService recipeService)
         {
-            _recipeService = recipeService;
+            _recipeService = recipeService; // Injecting the recipe service for data retrieval
         }
 
         [HttpGet]
         public async Task<ActionResult<List<Recipe>>> GetRecipes(
-            [FromQuery] string? cuisine = null,
-            [FromQuery] string? ingredient = null,
-            [FromQuery] string? sortBy = null,
-            [FromQuery] string order = "asc", // Default order is ascending
-            [FromQuery] int page = 1,        // Default page is 1
-            [FromQuery] int pageSize = 10    // Default page size is 10
+            [FromQuery] string? cuisine = null,  // Optional filter for cuisine type
+            [FromQuery] string? ingredient = null,  // Optional filter for ingredients
+            [FromQuery] string? sortBy = null,  // Optional sorting field
+            [FromQuery] string order = "asc",  // Sorting order: "asc" or "desc", default is ascending
+            [FromQuery] int page = 1,  // Default pagination starts at page 1
+            [FromQuery] int pageSize = 10  // Default number of items per page
         )
         {
-            // Fetch all recipes
+            // Fetch all recipes from the external API
             var recipes = await _recipeService.GetAllRecipes("");
 
             // Apply cuisine filter if specified
@@ -44,10 +44,10 @@ namespace RecipeDiscovery.Controllers
                     r.Ingredients.Any(i => i.Contains(ingredient, System.StringComparison.OrdinalIgnoreCase))).ToList();
             }
 
-            // Apply sorting if sortBy is specified
+            // Apply sorting if sortBy parameter is provided
             if (!string.IsNullOrEmpty(sortBy))
             {
-                // Check the sortBy field and apply the corresponding sorting logic
+                // Sorting based on the requested field
                 if (sortBy.ToLower() == "name")
                 {
                     recipes = order.ToLower() == "desc"
@@ -68,36 +68,38 @@ namespace RecipeDiscovery.Controllers
                 }
                 else
                 {
-                    // If the sortBy doesn't match any predefined fields, fallback to sorting by name
+                    // Default to sorting by name if invalid sortBy field is provided
                     recipes = order.ToLower() == "desc"
                         ? recipes.OrderByDescending(r => r.Name).ToList()
                         : recipes.OrderBy(r => r.Name).ToList();
                 }
             }
 
-            // Apply pagination: Skip the results for previous pages and take the pageSize number of recipes
+            // Apply pagination by skipping items from previous pages and taking the required count
             var pagedRecipes = recipes.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-            // Return the filtered, sorted, and paginated list of recipes
-            return Ok(pagedRecipes);
+            return Ok(pagedRecipes); // Return the final list of filtered, sorted, and paginated recipes
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}")] // Endpoint for fetching a specific recipe by ID
         public async Task<IActionResult> GetRecipeById(string id)
         {
-            var recipe = await _recipeService.GetRecipeById(id);
-
+            // Validate ID format (should be exactly 5 digits and numeric)
+            // We want to check this before calling GetRecipeById so we dont waste the call on an invalid id
             if (string.IsNullOrEmpty(id) || id.Length != 5 || !id.All(char.IsDigit))
             {
                 return BadRequest("Invalid recipe ID");
             }
 
+            var recipe = await _recipeService.GetRecipeById(id);
+
+            // If the recipe is not found, return 404 Not Found response
             if (recipe == null)
             {
                 return NotFound("Recipe not found");
             }
 
-            return Ok(recipe);
+            return Ok(recipe); // Return the found recipe
         }
     }
 }

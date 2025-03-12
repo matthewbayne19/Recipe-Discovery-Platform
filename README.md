@@ -1,21 +1,160 @@
-# Recipe Discovery Platform Coding Challenge
+```md
+# Recipe Discovery Platform
+This is a .NET-based Recipe Discovery Platform using GraphQL (HotChocolate) and REST API to fetch and enrich recipes from TheMealDB API.  
+It supports searching, sorting, pagination, user favorites, and API key authentication.
 
-Welcome to the Recipe Discovery Platform coding challenge! This task is designed to assess your skills in designing and implementing a backend API using both REST and GraphQL paradigms with the HotChocolate framework in .NET. We’re excited to see your creativity and technical expertise in action!
+## Setup Instructions
+### Prerequisites
+- .NET SDK installed ([Download here](https://dotnet.microsoft.com/en-us/download))
+- Visual Studio / VS Code recommended
+- Clone this repository:
+  ```bash
+  git clone https://github.com/matthewbayne19/Bayne-Recipe-Discovery-Solution.git
+  cd recipe-discovery-challenge
+  cd RecipeDiscovery
+  ```
 
-## Overview
+### Running the Project
+1. Install dependencies
+   ```bash
+   dotnet restore
+   ```
 
-You’ll build a backend for a **Recipe Discovery Platform** where users can browse recipes, filter them by criteria like cuisine or ingredients, and save their favorites. The application should expose both a REST API and a GraphQL API, with an optional bonus challenge to use GraphQL as an orchestration layer over a public REST API.
+2. Run the project
+   ```bash
+   dotnet run
+   ```
+   The app will start at `http://localhost:5011`.
 
-### Objectives
-- Demonstrate proficiency in .NET and the HotChocolate framework.
-- Design clean, maintainable APIs using REST and GraphQL.
-- Optionally integrate a public API or mock data to power the application.
-- Bonus: Use GraphQL to orchestrate and enrich data from a REST API.
+3. Access Swagger UI (REST API)
+   Open `http://localhost:5011/swagger`
 
-## Next Steps
-1. **Review the [REQUIREMENTS.md](REQUIREMENTS.md)**
-2. **Follow the steps outlined in [SUBMISSION.md](SUBMISSION.md)**
+4. Access GraphQL Playground (Nitro)
+   Open `http://localhost:5011/graphql`
 
-## Reach out if you have questions!
-1. **Reach out to us at developers@travelinsured.com with any questions you have. Include "Recipe Discovery Platform Coding Challenge" in your subject line**
-2. **Happy Coding! We look forward to seeing what you build!**
+### API Key Authentication
+- Every request must include an API key in the headers:
+  ```
+  X-API-KEY: simple-api-key
+  ```
+
+## GraphQL Usage
+### Fetch All Recipes with Sorting & Pagination
+```graphql
+query {
+  recipes(page: 1, pageSize: 5, sortBy: "name", order: "asc") {
+    id
+    name
+    cuisine
+    preparationTime
+    difficultyLevel
+    nutrition {
+      calories
+      protein
+    }
+  }
+}
+```
+
+### Fetch a Recipe by ID
+```graphql
+query {
+  recipeById(id: "53086") {
+    id
+    name
+    description
+    ingredients
+    cuisine
+    preparationTime
+    difficultyLevel
+    nutrition {
+      calories
+      protein
+    }
+  }
+}
+```
+
+### Add a Recipe to User Favorites
+```graphql
+mutation {
+  addFavoriteRecipe(userId: "user123", recipeId: "53086") 
+}
+```
+
+### Fetch User's Favorite Recipe IDs
+```graphql
+query {
+  userFavorites(userId: "user123")
+}
+```
+
+## Running Unit Tests
+The project includes **unit tests** for both **REST API** and **GraphQL** functionalities.
+
+### Prerequisites
+- Ensure the project builds successfully before running tests.
+- API Key authentication is required; tests have been updated to include the API key.
+
+### Running All Tests
+Use the following command to run all unit tests:
+```bash
+cd RecipeDiscovery.Tests
+```
+```bash
+dotnet test
+```
+
+### Running a Specific Test File
+To run only **REST API tests**:
+```bash
+dotnet test --filter FullyQualifiedName=RecipeDiscovery.Tests.RestApiTests
+```
+
+To run only **GraphQL tests**:
+```bash
+dotnet test --filter FullyQualifiedName=RecipeDiscovery.Tests.GraphQLTests
+```
+
+### Test Cases Covered
+- **REST API Tests**
+  - Fetch all recipes (`GET /recipes`)
+  - Fetch a single recipe by ID (`GET /recipes/{id}`)
+
+- **GraphQL Tests**
+  - Add a recipe to user favorites (`mutation addFavoriteRecipe`)
+  - Fetch user's favorite recipes (`query userFavorites`)
+
+### Debugging Test Failures
+- Ensure the API is running before executing tests.
+- If authentication errors occur (`401 Unauthorized`), verify the **API key** is included in test requests.
+- Run tests in **verbose mode** for more details:
+  ```bash
+  dotnet test --logger "console;verbosity=detailed"
+  ```
+
+## Explanation of Design Choices
+### GraphQL Orchestration
+- Part of the GraphQL implementation serves as an orchestration layer, fetching data from TheMealDB and enriching it with additional details like **nutrition, preparation time, and difficulty level**.
+- The `EnrichmentService` handles adding mock enrichment data to recipes.
+
+### Sorting & Pagination
+- Implemented in both REST and GraphQL.
+- Sorting can be done on fields like `name`, `cuisine`, and `preparationTime`.
+- Pagination allows fetching a subset of data for performance optimization.
+
+### API Key Authentication
+- Implemented via middleware to require an API key for all requests.
+- Prevents unauthorized access to the platform.
+
+### User Favorites
+- Stored in-memory for this implementation (using a dictionary).
+- Only stores recipe IDs to reduce data redundancy.
+
+### Unit Testing
+- Includes **REST API tests** and **GraphQL tests**.
+- Tests for adding a recipe to favorites and retrieving the favorites list.
+
+### Comments
+- Additional explanations can be found throughout code comments.
+```

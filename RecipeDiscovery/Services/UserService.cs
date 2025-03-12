@@ -2,10 +2,12 @@ using RecipeDiscovery.Models;
 
 namespace RecipeDiscovery.Services
 {
+    // Service for managing user favorite recipes
     public class UserService : IUserService
     {
+        // In-memory dictionary to store users and their favorite recipe IDs
         private readonly Dictionary<string, List<string>> userFavorites = new();
-        private readonly IRecipeService _recipeService;
+        private readonly IRecipeService _recipeService; // Service to fetch recipe details if needed
 
         public UserService(IRecipeService recipeService)
         {
@@ -13,7 +15,7 @@ namespace RecipeDiscovery.Services
         }
 
         /*
-        // Get favorite recipes COMPLETE for a user (not using because we are just returning the ids, but could use this to have full recipes)
+        // Alternative method: Get full recipe details instead of just IDs
         public async Task<List<Recipe>> GetUserFavorites(string userId)
         {
             if (userFavorites.ContainsKey(userId))
@@ -35,24 +37,27 @@ namespace RecipeDiscovery.Services
                 return favoriteRecipes;
             }
 
-            return new List<Recipe>(); //return empty list, bad API practice to change response structure based on content (ie. adding no favs message)
+            return new List<Recipe>(); // Return an empty list if no favorites exist
         }
         */
 
-        // Get the list of recipe ids in the favorites list
+        // Returns a list of recipe IDs that the user has favorited
         public Task<List<string>> GetUserFavorites(string userId)
         {
+            // Return their favorite recipe IDs, otherwise return an empty list
             return Task.FromResult(userFavorites.ContainsKey(userId) ? userFavorites[userId] : new List<string>());
         }
 
-        // Add a recipe to a user's favorites
+        // Adds a recipe to the user's favorites
         public Task AddUserFavorite(string userId, string recipeId)
         {
+            // If the user doesn't have a favorites list yet, create one
             if (!userFavorites.ContainsKey(userId))
             {
                 userFavorites[userId] = new List<string>();
             }
 
+            // Add the recipe ID to the favorites list if it isn't already present
             if (!userFavorites[userId].Contains(recipeId))
             {
                 userFavorites[userId].Add(recipeId);

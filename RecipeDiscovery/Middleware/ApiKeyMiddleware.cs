@@ -6,17 +6,17 @@ namespace RecipeDiscovery.Middleware
 {
     public class ApiKeyMiddleware
     {
-        private readonly RequestDelegate _next;
+        private readonly RequestDelegate _next; // Represents the next middleware in the pipeline
         private const string ApiKeyHeaderName = "X-API-KEY";  // The header key used to pass the API Key
         private const string ValidApiKey = "simple-api-key";  // The valid API key to check
 
         // Constructor to receive the next middleware in the pipeline
         public ApiKeyMiddleware(RequestDelegate next)
         {
-            _next = next ?? throw new ArgumentNullException(nameof(next));
+            _next = next ?? throw new ArgumentNullException(nameof(next)); // Ensure next middleware is not null
         }
 
-        // The main method for processing the API Key validation
+        // Middleware logic to validate API Key
         public async Task InvokeAsync(HttpContext context)
         {
             // Check if the API key is present in the request headers
@@ -38,7 +38,7 @@ namespace RecipeDiscovery.Middleware
                 return;
             }
 
-            // If the API key is valid, call the next middleware in the pipeline
+            // If the API key is valid, proceed to the next middleware in the pipeline
             await _next(context);
         }
     }
