@@ -4,8 +4,7 @@ It supports searching, sorting, pagination, user favorites, and API key authenti
 
 ## Setup Instructions
 ### Prerequisites
-- .NET SDK installed ([Download here](https://dotnet.microsoft.com/en-us/download))
-- Visual Studio / VS Code recommended
+- .NET SDK installed
 - Clone this repository:
   ```bash
   git clone https://github.com/matthewbayne19/Bayne-Recipe-Discovery-Solution.git
