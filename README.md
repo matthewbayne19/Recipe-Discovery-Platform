@@ -8,8 +8,7 @@ It supports searching, sorting, pagination, user favorites, and API key authenti
 - Clone this repository:
   ```bash
   git clone https://github.com/matthewbayne19/Bayne-Recipe-Discovery-Solution.git
-  cd recipe-discovery-challenge
-  cd RecipeDiscovery
+  cd recipe-discovery-challenge/RecipeDiscovery
   ```
 
 ### Running the Project
