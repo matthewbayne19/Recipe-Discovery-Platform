@@ -29,7 +29,7 @@ namespace RecipeDiscovery.GraphQL
             }
 
             var favorites = await _userService.GetUserFavorites(userId);
-            if (favorites.Any(f => f.Id == recipeId)) 
+            if (favorites.Any(f => f == recipeId)) 
             {
                 return "Recipe is already in favorites.";
             }

@@ -99,7 +99,7 @@ namespace RecipeDiscovery.GraphQL
         }
 
         // Fetch a user's favorite recipes
-        public async Task<List<Recipe>> GetUserFavorites(string userId)
+        public async Task<List<string>> GetUserFavorites(string userId)
         {
             var favorites = await _userService.GetUserFavorites(userId);
             return favorites;

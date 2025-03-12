@@ -70,7 +70,7 @@ namespace RecipeDiscovery.Controllers
 
             // Check if the recipe is already in the user's favorites
             var favorites = await _userService.GetUserFavorites(userId);
-            if (favorites.Any(f => f.Id == payload.RecipeId)) // Compare Recipe Ids
+            if (favorites.Any(f => f == payload.RecipeId)) // Compare Recipe Ids
             {
                 return Ok(new { message = "Recipe is already in favorites." });
             }
