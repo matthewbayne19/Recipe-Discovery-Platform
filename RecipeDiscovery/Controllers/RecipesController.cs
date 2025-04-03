@@ -31,17 +31,18 @@ namespace RecipeDiscovery.Controllers
             // Fetch all recipes from the external API
             var recipes = await _recipeService.GetAllRecipes("");
 
-            // Apply cuisine filter if specified
+            // Apply cuisine filter if specified (match must start with input)
             if (!string.IsNullOrEmpty(cuisine))
             {
-                recipes = recipes.Where(r => r.Cuisine.Equals(cuisine, System.StringComparison.OrdinalIgnoreCase)).ToList();
+                recipes = recipes.Where(r => r.Cuisine != null &&
+                    r.Cuisine.StartsWith(cuisine, System.StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            // Apply ingredient filter if specified
+            // Apply ingredient filter if specified (match must start with input)
             if (!string.IsNullOrEmpty(ingredient))
             {
                 recipes = recipes.Where(r => r.Ingredients != null &&
-                    r.Ingredients.Any(i => i.Contains(ingredient, System.StringComparison.OrdinalIgnoreCase))).ToList();
+                    r.Ingredients.Any(i => i.StartsWith(ingredient, System.StringComparison.OrdinalIgnoreCase))).ToList();
             }
 
             // Apply sorting if sortBy parameter is provided
@@ -85,7 +86,7 @@ namespace RecipeDiscovery.Controllers
         public async Task<IActionResult> GetRecipeById(string id)
         {
             // Validate ID format (should be exactly 5 digits and numeric)
-            // We want to check this before calling GetRecipeById so we dont waste the call on an invalid id
+            // We want to check this before calling GetRecipeById so we don't waste the call on an invalid id
             if (string.IsNullOrEmpty(id) || id.Length != 5 || !id.All(char.IsDigit))
             {
                 return BadRequest("Invalid recipe ID");
