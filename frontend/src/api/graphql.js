@@ -18,14 +18,14 @@ export const GET_RECIPE_BY_ID = gql`
 
 // Mutation to add a recipe to user's favorites
 export const ADD_FAVORITE_MUTATION = gql`
-  mutation AddFavorite($userId: String!, $recipeId: String!) {
-    addFavorite(userId: $userId, recipeId: $recipeId)
+  mutation AddFavorite($recipeId: String!) {
+    addFavorite(userId: "1", recipeId: $recipeId)
   }
 `;
 
 // Query to get user's favorite recipe IDs
 export const GET_USER_FAVORITES = gql`
-  query GetUserFavorites($userId: String!) {
-    userFavorites(userId: $userId)
+  query GetUserFavorites {
+    userFavorites(userId: "1")
   }
 `;
