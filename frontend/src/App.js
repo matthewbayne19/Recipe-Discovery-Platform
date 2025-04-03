@@ -1,6 +1,10 @@
 // React Router is used for handling navigation between different pages
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
+// ApolloProvider is used to make the Apollo Client available throughout the app
+import { ApolloProvider } from '@apollo/client';
+import client from './api/graphql';
+
 // Import the page components for routing
 import Home from './pages/Home';
 import RecipePage from './pages/RecipePage';
@@ -8,19 +12,22 @@ import FavoritesPage from './pages/FavoritesPage';
 
 function App() {
   return (
-    // Router wraps the entire app and enables route-based navigation
-    <Router>
-      <Routes>
-        {/* Route for the home page which displays all recipes */}
-        <Route path="/" element={<Home />} />
+    // Provide Apollo Client to all child components
+    <ApolloProvider client={client}>
+      {/* Router wraps the entire app and enables route-based navigation */}
+      <Router>
+        <Routes>
+          {/* Route for the home page which displays all recipes */}
+          <Route path="/" element={<Home />} />
 
-        {/* Route for viewing the details of a specific recipe (by ID) */}
-        <Route path="/recipe/:id" element={<RecipePage />} />
+          {/* Route for viewing the details of a specific recipe (by ID) */}
+          <Route path="/recipes/:id" element={<RecipePage />} />
 
-        {/* Route for viewing the user's list of favorite recipes */}
-        <Route path="/favorites" element={<FavoritesPage />} />
-      </Routes>
-    </Router>
+          {/* Route for viewing the user's list of favorite recipes */}
+          <Route path="/favorites" element={<FavoritesPage />} />
+        </Routes>
+      </Router>
+    </ApolloProvider>
   );
 }
 

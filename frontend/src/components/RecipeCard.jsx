@@ -1,15 +1,26 @@
 import React from "react";
 import { Card, CardMedia, CardContent, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-// RecipeCard component receives a single recipe object as a prop
+// RecipeCard displays a single recipe summary and navigates on click
 const RecipeCard = ({ recipe }) => {
+  const navigate = useNavigate();
+
+  // Handle card click to navigate to detailed recipe view
+  const handleClick = () => {
+    navigate(`/recipes/${recipe.id}`);
+  };
+
   return (
-    <Card sx={{ maxWidth: 345, m: 2 }}>
-      {/* Displays the image thumbnail for the recipe */}
+    <Card 
+      sx={{ maxWidth: 345, m: 2, cursor: "pointer" }} 
+      onClick={handleClick}
+    >
+      {/* Recipe thumbnail image */}
       <CardMedia
         component="img"
         height="180"
-        image={recipe.imageUrl} // Uses the backend-supplied image URL
+        image={recipe.imageUrl}
         alt={recipe.name}
       />
 
