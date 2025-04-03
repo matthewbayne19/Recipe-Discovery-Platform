@@ -1,22 +1,42 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import { CircularProgress, Typography, Box } from "@mui/material";
-import { GET_RECIPE_BY_ID } from "../api/graphql"; // Importing query
+import { GET_RECIPE_BY_ID } from "../api/graphql";
 
 const RecipePage = () => {
   const { id } = useParams();
+  const [cachedRecipe, setCachedRecipe] = useState(null);
+
+  // Try to load from localStorage on initial mount
+  useEffect(() => {
+    const stored = localStorage.getItem(`recipe-${id}`);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      setCachedRecipe(parsed);
+      console.log(`Loaded recipe ${id} from cache`);
+    }
+  }, [id]);
 
   const { data, loading, error } = useQuery(GET_RECIPE_BY_ID, {
     variables: { id },
+    skip: !!cachedRecipe, // Don't run query if we have cached data
+    fetchPolicy: "network-only", // Avoid Apollo cache interference
   });
 
-  console.log("USED GRAPHQL TO GET RECIPE DETAILS")
+  // Cache the data after GraphQL returns it
+  useEffect(() => {
+    if (!cachedRecipe && !loading && data?.recipeById) {
+      localStorage.setItem(`recipe-${id}`, JSON.stringify(data.recipeById));
+      setCachedRecipe(data.recipeById);
+      console.log("USED GRAPHQL TO GET RECIPE DETAILS");
+    }
+  }, [data, cachedRecipe, loading, id]);
 
-  if (loading) return <CircularProgress />;
+  if (loading && !cachedRecipe) return <CircularProgress />;
   if (error) return <Typography>Error loading recipe.</Typography>;
 
-  const recipe = data.recipeById;
+  const recipe = cachedRecipe || data?.recipeById;
 
   return (
     <Box p={3}>
