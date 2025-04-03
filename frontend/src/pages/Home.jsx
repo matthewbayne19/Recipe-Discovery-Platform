@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import {
   Container, CircularProgress, Alert, Grid,
-  Pagination, FormControl, InputLabel, Select, MenuItem, Box, TextField
+  Pagination, FormControl, InputLabel, Select, MenuItem, Box, TextField, Button
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import RecipeList from '../components/RecipeList';
-import axios from 'axios';
+import { fetchRecipes } from '../api/rest';  // Import the REST API method
 
 const LOCAL_STORAGE_KEY = 'recipe_cache';
 
@@ -19,8 +20,9 @@ const Home = () => {
   const [filterIngredient, setFilterIngredient] = useState(localStorage.getItem('filterIngredient') || '');
   const [debouncedCuisine, setDebouncedCuisine] = useState(filterCuisine);
   const [debouncedIngredient, setDebouncedIngredient] = useState(filterIngredient);
+  const navigate = useNavigate();
 
-  // Debounce both filters
+  // Debounce filters
   useEffect(() => {
     const timeout = setTimeout(() => {
       setDebouncedCuisine(filterCuisine);
@@ -35,26 +37,18 @@ const Home = () => {
   useEffect(() => {
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
   
-    const fetchRecipes = async () => {
+    const handleFetch = async () => {
       setLoading(true);
       setError(null);
   
       try {
-        const response = await axios.get('http://localhost:5011/recipes', {
-          headers: { 'X-API-KEY': 'simple-api-key' },
-          params: {
-            page,
-            pageSize,
-            cuisine: debouncedCuisine,
-            ingredient: debouncedIngredient
-          }
+        const result = await fetchRecipes({
+          page,
+          pageSize,
+          cuisine: debouncedCuisine,
+          ingredient: debouncedIngredient
         });
-  
-        const result = {
-          recipes: response.data.recipes,
-          totalCount: response.data.totalCount
-        };
-  
+
         console.log(`Page ${page} (pageSize ${pageSize}) fetched from API`);
   
         setRecipes(result.recipes);
@@ -91,7 +85,7 @@ const Home = () => {
       }
     }
   
-    fetchRecipes();
+    handleFetch();
   }, [page, pageSize, debouncedCuisine, debouncedIngredient]);
 
   const totalPages = Math.ceil(totalCount / pageSize);
@@ -106,6 +100,14 @@ const Home = () => {
         flexDirection: 'column'
       }}
     >
+              <Button
+        variant="contained"
+        color="primary"
+        onClick={() => navigate('/favorites')}
+        sx={{ alignSelf: 'flex-end', mb: 2 }}
+      >
+        View Favorites
+      </Button>
       {/* Filters */}
       <Box
         mb={3}
