@@ -1,18 +1,16 @@
-import {
-    ApolloClient,
-    InMemoryCache,
-    HttpLink,
-  } from "@apollo/client";
-  
-  const client = new ApolloClient({
-    link: new HttpLink({
-      uri: "http://localhost:5011/graphql", // backend GraphQL endpoint
-      headers: {
-        "X-API-KEY": "simple-api-key",
-      },
-    }),
-    cache: new InMemoryCache(),
-  });
-  
-  export default client;
-  
+import { gql } from "@apollo/client";
+
+// Example: query for a recipe by ID
+export const GET_RECIPE_BY_ID = gql`
+  query GetRecipeById($id: String!) {
+    recipeById(id: $id) {
+      id
+      name
+      description
+      cuisine
+      preparationTime
+      difficultyLevel
+      ingredients
+    }
+  }
+`;

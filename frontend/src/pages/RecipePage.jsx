@@ -1,21 +1,8 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { CircularProgress, Typography, Box } from "@mui/material";
-
-const GET_RECIPE_BY_ID = gql`
-  query GetRecipeById($id: String!) {
-    recipeById(id: $id) {
-      id
-      name
-      description
-      cuisine
-      preparationTime
-      difficultyLevel
-      ingredients
-    }
-  }
-`;
+import { GET_RECIPE_BY_ID } from "../api/graphql"; // Importing query
 
 const RecipePage = () => {
   const { id } = useParams();
@@ -23,6 +10,8 @@ const RecipePage = () => {
   const { data, loading, error } = useQuery(GET_RECIPE_BY_ID, {
     variables: { id },
   });
+
+  console.log("USED GRAPHQL TO GET RECIPE DETAILS")
 
   if (loading) return <CircularProgress />;
   if (error) return <Typography>Error loading recipe.</Typography>;
