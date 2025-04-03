@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation } from "@apollo/client";
-import { CircularProgress, Typography, Box, Button, Tooltip } from "@mui/material";
+import { CircularProgress, Typography, Box, Button, Tooltip, Snackbar } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import { GET_RECIPE_BY_ID, TOGGLE_FAVORITE_MUTATION, GET_USER_FAVORITES } from "../api/graphql";
 
@@ -9,8 +9,10 @@ const RecipePage = () => {
   const { id } = useParams();
   const [cachedRecipe, setCachedRecipe] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
-  // Query to get the recipe by id if it's not in cache
+  // Query to get the recipe details
   const { data, loading, error } = useQuery(GET_RECIPE_BY_ID, {
     variables: { id },
     skip: !!cachedRecipe,
@@ -20,13 +22,17 @@ const RecipePage = () => {
   // Query to check if the recipe is in user's favorites
   const { data: favoritesData } = useQuery(GET_USER_FAVORITES);
 
-  // Mutation to add/remove recipe
+  // Mutation to toggle the favorite status of the recipe
   const [toggleFavorite, { loading: togglingFavorite, error: toggleError }] = useMutation(TOGGLE_FAVORITE_MUTATION, {
     variables: { recipeId: id },
-    refetchQueries: [{ query: GET_USER_FAVORITES }],  // Refetch favorites list after toggling
+    onCompleted: (data) => {
+      setIsFavorite(!isFavorite); // Toggle the local favorite state
+      setSnackbarMessage(data.toggleFavoriteRecipe);
+      setSnackbarOpen(true);
+    }
   });
 
-  // Load from localStorage on initial mount
+  // Load from localStorage and determine if it's a favorite
   useEffect(() => {
     const stored = localStorage.getItem(`recipe-${id}`);
     if (stored) {
@@ -34,9 +40,14 @@ const RecipePage = () => {
       setCachedRecipe(parsed);
       console.log(`Loaded recipe ${id} from cache`);
     }
-  }, [id]);
 
-  // Cache data after GraphQL returns it
+    // Determine if the recipe is in the favorites list
+    if (favoritesData && favoritesData.userFavorites.includes(id)) {
+      setIsFavorite(true);
+    }
+  }, [id, favoritesData]);
+
+  // Cache recipe details
   useEffect(() => {
     if (!cachedRecipe && !loading && data?.recipeById) {
       localStorage.setItem(`recipe-${id}`, JSON.stringify(data.recipeById));
@@ -45,22 +56,18 @@ const RecipePage = () => {
     }
   }, [data, cachedRecipe, loading, id]);
 
-  // Check if the recipe is a favorite
-  useEffect(() => {
-    if (favoritesData && favoritesData.userFavorites) {
-      setIsFavorite(favoritesData.userFavorites.includes(id));
-    }
-  }, [favoritesData, id]);
-
   const handleToggleFavorite = async () => {
     try {
-      const response = await toggleFavorite();
-      console.log("Toggle favorite method hit.")
-      alert(response.data.toggleFavoriteRecipe);
+      await toggleFavorite();
     } catch (err) {
       console.error("Failed to toggle recipe in favorites", err);
-      alert("Error toggling recipe in favorites.");
+      setSnackbarMessage('Error toggling recipe in favorites.');
+      setSnackbarOpen(true);
     }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
   if (loading && !cachedRecipe) return <CircularProgress />;
@@ -100,6 +107,13 @@ const RecipePage = () => {
           <li key={index}>{ing}</li>
         ))}
       </ul>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        message={snackbarMessage}
+      />
     </Box>
   );
 };
