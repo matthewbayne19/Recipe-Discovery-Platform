@@ -39,9 +39,7 @@ const Home = () => {
 
     try {
       const response = await axios.get('http://localhost:5011/recipes', {
-        headers: {
-          'X-API-KEY': 'simple-api-key',
-        },
+        headers: { 'X-API-KEY': 'simple-api-key' },
         params: { page, pageSize }
       });
 
@@ -55,7 +53,6 @@ const Home = () => {
       setRecipes(result.recipes);
       setTotalCount(result.totalCount);
 
-      // Save to localStorage
       const existing = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '{}');
       const updated = {
         ...existing,
@@ -81,41 +78,47 @@ const Home = () => {
         Recipe Discovery
       </Typography>
 
-      {loading && <CircularProgress />}
+      {/* Recipe content */}
+      {loading && <Box textAlign="center" py={4}><CircularProgress /></Box>}
       {error && <Alert severity="error">{error}</Alert>}
-
       {!loading && !error && (
-        <>
-          <Grid container spacing={2}>
-            <RecipeList recipes={recipes} />
-          </Grid>
-
-          <Box display="flex" justifyContent="space-between" alignItems="center" mt={4}>
-            <FormControl size="small">
-              <InputLabel>Per Page</InputLabel>
-              <Select
-                value={pageSize}
-                label="Per Page"
-                onChange={(e) => {
-                  setPageSize(e.target.value);
-                  setPage(1);
-                }}
-              >
-                {[5, 10, 20, 50].map(size => (
-                  <MenuItem key={size} value={size}>{size}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <Pagination
-              count={totalPages}
-              page={page}
-              onChange={(_, newPage) => setPage(newPage)}
-              color="primary"
-            />
-          </Box>
-        </>
+        <Grid container spacing={2}>
+          <RecipeList recipes={recipes} />
+        </Grid>
       )}
+
+      {/* Always visible pagination controls */}
+      <Box
+        mt={6}
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        flexWrap="wrap"
+      >
+        <FormControl size="small" disabled={loading} sx={{ minWidth: 120 }}>
+          <InputLabel>Per Page</InputLabel>
+          <Select
+            value={pageSize}
+            label="Per Page"
+            onChange={(e) => {
+              setPageSize(e.target.value);
+              setPage(1);
+            }}
+          >
+            {[5, 10, 20, 50].map(size => (
+              <MenuItem key={size} value={size}>{size}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={(_, newPage) => setPage(newPage)}
+          color="primary"
+          disabled={loading}
+        />
+      </Box>
     </Container>
   );
 };
