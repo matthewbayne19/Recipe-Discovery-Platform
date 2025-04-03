@@ -12,7 +12,6 @@ namespace RecipeDiscovery.Services
     {
         private readonly HttpClient _httpClient; // HttpClient for making API requests
         private readonly IEnrichmentService _enrichmentService; // Service to enrich recipe data
-        private const string ApiUrl = "https://www.themealdb.com/api/json/v1/1/search.php?s="; // API endpoint for fetching recipes
 
         public RecipeService(HttpClient httpClient, IEnrichmentService enrichmentService)
         {
@@ -20,42 +19,45 @@ namespace RecipeDiscovery.Services
             _enrichmentService = enrichmentService;
         }
 
-        // Fetches all recipes from TheMealDB API
+        // Fetches all recipes from TheMealDB API across A-Z
         public async Task<List<Recipe>> GetAllRecipes(string query)
         {
-            var response = await _httpClient.GetStringAsync(ApiUrl + query);
-            var json = JsonDocument.Parse(response);
+            var allRecipes = new List<Recipe>();
 
-            var meals = json.RootElement.GetProperty("meals");
-
-            // If no meals are found, return an empty list
-            if (meals.ValueKind == JsonValueKind.Null)
-                return new List<Recipe>();
-
-            // Convert API response into a list of Recipe objects
-            var recipes = meals.EnumerateArray().Select(meal => new Recipe
+            // Loop through letters a-z to get all meals
+            for (char letter = 'a'; letter <= 'z'; letter++)
             {
-                Id = meal.GetProperty("idMeal").GetString() ?? "",
-                Name = meal.GetProperty("strMeal").GetString() ?? "",
-                Description = meal.GetProperty("strInstructions").GetString() ?? "",
-                Ingredients = ExtractIngredientNames(meal),
-                Cuisine = meal.GetProperty("strArea").GetString() ?? "",
-                ImageUrl = meal.GetProperty("strMealThumb").GetString() ?? "" // 👈 Add this line
-            }).ToList();
+                var response = await _httpClient.GetStringAsync($"https://www.themealdb.com/api/json/v1/1/search.php?f={letter}");
+                var json = JsonDocument.Parse(response);
+
+                if (json.RootElement.TryGetProperty("meals", out JsonElement meals) && meals.ValueKind != JsonValueKind.Null)
+                {
+                    var recipes = meals.EnumerateArray().Select(meal => new Recipe
+                    {
+                        Id = meal.GetProperty("idMeal").GetString() ?? "",
+                        Name = meal.GetProperty("strMeal").GetString() ?? "",
+                        Description = meal.GetProperty("strInstructions").GetString() ?? "",
+                        Ingredients = ExtractIngredientNames(meal),
+                        Cuisine = meal.GetProperty("strArea").GetString() ?? "",
+                        ImageUrl = meal.GetProperty("strMealThumb").GetString() ?? ""
+                    }).ToList();
+
+                    allRecipes.AddRange(recipes);
+                }
+            }
 
             // Enrich each recipe with additional details
-            foreach (var recipe in recipes)
+            foreach (var recipe in allRecipes)
             {
                 await _enrichmentService.Enrich(recipe);
             }
 
-            return recipes;
+            return allRecipes;
         }
 
         // Fetches a single recipe by ID from TheMealDB API
         public async Task<Recipe?> GetRecipeById(string id)
         {
-            // Validate that the ID is a 5-digit numeric string
             if (string.IsNullOrEmpty(id) || id.Length != 5 || !id.All(char.IsDigit))
             {
                 return null;
@@ -67,7 +69,6 @@ namespace RecipeDiscovery.Services
 
             var meals = json.RootElement.GetProperty("meals");
 
-            // If no meal is found, return null
             if (meals.ValueKind == JsonValueKind.Null)
                 return null;
 
@@ -76,7 +77,6 @@ namespace RecipeDiscovery.Services
             if (meal.ValueKind == JsonValueKind.Undefined)
                 return null;
 
-            // Map API response to a Recipe object
             var recipe = new Recipe
             {
                 Id = meal.GetProperty("idMeal").GetString() ?? "",
@@ -84,32 +84,25 @@ namespace RecipeDiscovery.Services
                 Description = meal.GetProperty("strInstructions").GetString() ?? "",
                 Ingredients = ExtractIngredientNames(meal),
                 Cuisine = meal.GetProperty("strArea").GetString() ?? "",
-                ImageUrl = meal.GetProperty("strMealThumb").GetString() ?? "" // 👈 Add this line
+                ImageUrl = meal.GetProperty("strMealThumb").GetString() ?? ""
             };
 
-
-            // Enrich the recipe with additional details (mock data)
             await _enrichmentService.Enrich(recipe);
 
             return recipe;
         }
 
-        // Extracts up to 20 ingredient names from the API response dynamically
         private static List<string> ExtractIngredientNames(JsonElement meal)
         {
             var ingredients = new List<string>();
             for (int i = 1; i <= 20; i++)
             {
-                string ingredientKey = $"strIngredient{i}";
-
-                if (meal.TryGetProperty(ingredientKey, out JsonElement ingredientElement))
+                string key = $"strIngredient{i}";
+                if (meal.TryGetProperty(key, out JsonElement ingredientEl))
                 {
-                    string ingredient = ingredientElement.GetString() ?? "";
-
+                    string ingredient = ingredientEl.GetString() ?? "";
                     if (!string.IsNullOrWhiteSpace(ingredient))
-                    {
                         ingredients.Add(ingredient);
-                    }
                 }
             }
             return ingredients;

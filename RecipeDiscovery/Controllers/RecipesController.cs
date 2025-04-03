@@ -19,36 +19,37 @@ namespace RecipeDiscovery.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Recipe>>> GetRecipes(
-            [FromQuery] string? cuisine = null,  // Optional filter for cuisine type
-            [FromQuery] string? ingredient = null,  // Optional filter for ingredients
-            [FromQuery] string? sortBy = null,  // Optional sorting field
-            [FromQuery] string order = "asc",  // Sorting order: "asc" or "desc", default is ascending
-            [FromQuery] int page = 1,  // Default pagination starts at page 1
-            [FromQuery] int pageSize = 10  // Default number of items per page
+        public async Task<ActionResult<object>> GetRecipes(
+            [FromQuery] string? cuisine = null,
+            [FromQuery] string? ingredient = null,
+            [FromQuery] string? sortBy = null,
+            [FromQuery] string order = "asc",
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10
         )
         {
-            // Fetch all recipes from the external API
             var recipes = await _recipeService.GetAllRecipes("");
 
-            // Apply cuisine filter if specified (match must start with input)
+            // Apply cuisine filter (starts with)
             if (!string.IsNullOrEmpty(cuisine))
             {
                 recipes = recipes.Where(r => r.Cuisine != null &&
                     r.Cuisine.StartsWith(cuisine, System.StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            // Apply ingredient filter if specified (match must start with input)
+            // Apply ingredient filter (starts with)
             if (!string.IsNullOrEmpty(ingredient))
             {
                 recipes = recipes.Where(r => r.Ingredients != null &&
                     r.Ingredients.Any(i => i.StartsWith(ingredient, System.StringComparison.OrdinalIgnoreCase))).ToList();
             }
 
-            // Apply sorting if sortBy parameter is provided
+            // Store total after filtering, before pagination
+            int totalCount = recipes.Count;
+
+            // Sorting
             if (!string.IsNullOrEmpty(sortBy))
             {
-                // Sorting based on the requested field
                 if (sortBy.ToLower() == "name")
                 {
                     recipes = order.ToLower() == "desc"
@@ -69,17 +70,24 @@ namespace RecipeDiscovery.Controllers
                 }
                 else
                 {
-                    // Default to sorting by name if invalid sortBy field is provided
                     recipes = order.ToLower() == "desc"
                         ? recipes.OrderByDescending(r => r.Name).ToList()
                         : recipes.OrderBy(r => r.Name).ToList();
                 }
             }
 
-            // Apply pagination by skipping items from previous pages and taking the required count
-            var pagedRecipes = recipes.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            // Pagination
+            var pagedRecipes = recipes
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
 
-            return Ok(pagedRecipes); // Return the final list of filtered, sorted, and paginated recipes
+            // Return wrapped response with total count
+            return Ok(new
+            {
+                recipes = pagedRecipes,
+                totalCount = totalCount
+            });
         }
 
         [HttpGet("{id}")] // Endpoint for fetching a specific recipe by ID
