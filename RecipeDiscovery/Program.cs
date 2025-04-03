@@ -95,7 +95,10 @@ public class Program
         builder.Services
             .AddGraphQLServer()
             .AddQueryType<Query>()
-            .AddMutationType<Mutation>();
+            .AddMutationType<Mutation>()
+            .AddFiltering()
+            .AddSorting();
+ 
 
         var app = builder.Build();
 
