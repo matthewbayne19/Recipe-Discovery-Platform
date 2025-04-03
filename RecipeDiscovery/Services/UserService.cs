@@ -6,7 +6,7 @@ namespace RecipeDiscovery.Services
     public class UserService : IUserService
     {
         // In-memory dictionary to store users and their favorite recipe IDs
-        private readonly Dictionary<string, List<string>> userFavorites = new();
+        private readonly Dictionary<string, List<string>> userFavorites = new(); //O(1)
         private readonly IRecipeService _recipeService; // Service to fetch recipe details if needed
 
         public UserService(IRecipeService recipeService)

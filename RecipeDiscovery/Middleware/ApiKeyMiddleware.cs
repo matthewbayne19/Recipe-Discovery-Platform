@@ -19,6 +19,13 @@ namespace RecipeDiscovery.Middleware
         // Middleware logic to validate API Key
         public async Task InvokeAsync(HttpContext context)
         {
+            // Allow Nitro to load without API key in development (Noticed unable to get to Nitro)
+            if (context.Request.Path.StartsWithSegments("/graphql") &&
+                context.Request.Method.Equals("GET", StringComparison.OrdinalIgnoreCase))
+            {
+                await _next(context);
+                return;
+            }
             // Check if the API key is present in the request headers
             if (!context.Request.Headers.ContainsKey(ApiKeyHeaderName))
             {

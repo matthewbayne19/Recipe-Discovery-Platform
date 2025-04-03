@@ -14,7 +14,7 @@ public class RestApiTests : IClassFixture<WebApplicationFactory<Program>>
         _client = factory.CreateClient();
     }
 
-    // Test to check if the GET /recipes endpoint returns a successful response
+    // Test to check if the GET /recipes endpoint returns a successful response REFIT
     [Fact]
     public async Task GetRecipes_ReturnsOkResponse()
     {
