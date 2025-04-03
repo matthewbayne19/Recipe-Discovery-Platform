@@ -11,7 +11,7 @@ const LOCAL_STORAGE_KEY = 'recipe_cache';
 const Home = () => {
   const [recipes, setRecipes] = useState([]);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(9);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -79,21 +79,29 @@ const Home = () => {
       </Typography>
 
       {/* Recipe content */}
-      {loading && <Box textAlign="center" py={4}><CircularProgress /></Box>}
-      {error && <Alert severity="error">{error}</Alert>}
-      {!loading && !error && (
-        <Grid container spacing={2}>
-          <RecipeList recipes={recipes} />
-        </Grid>
-      )}
+      <Box minHeight="500px" display="flex" alignItems="center" justifyContent="center">
+        {loading && <CircularProgress />}
+        {error && <Alert severity="error">{error}</Alert>}
+        {!loading && !error && (
+          <Grid container spacing={2}>
+            <RecipeList recipes={recipes} />
+          </Grid>
+        )}
+      </Box>
 
-      {/* Always visible pagination controls */}
+      {/* Pagination Controls anchored near bottom */}
       <Box
-        mt={6}
+        position="fixed"
+        bottom="5vh"
+        left="0"
+        width="100%"
         display="flex"
-        justifyContent="space-between"
+        justifyContent="center"
         alignItems="center"
-        flexWrap="wrap"
+        gap={4}
+        zIndex={10}
+        bgcolor="white"
+        py={1}
       >
         <FormControl size="small" disabled={loading} sx={{ minWidth: 120 }}>
           <InputLabel>Per Page</InputLabel>
@@ -105,7 +113,7 @@ const Home = () => {
               setPage(1);
             }}
           >
-            {[5, 10, 20, 50].map(size => (
+            {[9, 18, 27, 36].map(size => (
               <MenuItem key={size} value={size}>{size}</MenuItem>
             ))}
           </Select>
