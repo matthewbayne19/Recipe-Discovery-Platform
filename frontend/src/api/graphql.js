@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-// query for a recipe by ID
+// Query for a single recipe by ID
 export const GET_RECIPE_BY_ID = gql`
   query GetRecipeById($id: String!) {
     recipeById(id: $id) {
@@ -11,8 +11,21 @@ export const GET_RECIPE_BY_ID = gql`
       preparationTime
       difficultyLevel
       ingredients
+      imageUrl
     }
   }
 `;
 
-// mutation ...
+// Mutation to add a recipe to user's favorites
+export const ADD_FAVORITE_MUTATION = gql`
+  mutation AddFavorite($userId: String!, $recipeId: String!) {
+    addFavorite(userId: $userId, recipeId: $recipeId)
+  }
+`;
+
+// Query to get user's favorite recipe IDs
+export const GET_USER_FAVORITES = gql`
+  query GetUserFavorites($userId: String!) {
+    userFavorites(userId: $userId)
+  }
+`;
