@@ -38,8 +38,9 @@ namespace RecipeDiscovery.Services
                 Id = meal.GetProperty("idMeal").GetString() ?? "",
                 Name = meal.GetProperty("strMeal").GetString() ?? "",
                 Description = meal.GetProperty("strInstructions").GetString() ?? "",
-                Ingredients = ExtractIngredientNames(meal), // Extracts ingredient list dynamically
-                Cuisine = meal.GetProperty("strArea").GetString() ?? ""
+                Ingredients = ExtractIngredientNames(meal),
+                Cuisine = meal.GetProperty("strArea").GetString() ?? "",
+                ImageUrl = meal.GetProperty("strMealThumb").GetString() ?? "" // 👈 Add this line
             }).ToList();
 
             // Enrich each recipe with additional details
@@ -81,9 +82,11 @@ namespace RecipeDiscovery.Services
                 Id = meal.GetProperty("idMeal").GetString() ?? "",
                 Name = meal.GetProperty("strMeal").GetString() ?? "",
                 Description = meal.GetProperty("strInstructions").GetString() ?? "",
-                Ingredients = ExtractIngredientNames(meal), // Extracts ingredient list dynamically
-                Cuisine = meal.GetProperty("strArea").GetString() ?? ""
+                Ingredients = ExtractIngredientNames(meal),
+                Cuisine = meal.GetProperty("strArea").GetString() ?? "",
+                ImageUrl = meal.GetProperty("strMealThumb").GetString() ?? "" // 👈 Add this line
             };
+
 
             // Enrich the recipe with additional details (mock data)
             await _enrichmentService.Enrich(recipe);

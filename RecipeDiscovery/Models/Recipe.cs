@@ -34,5 +34,9 @@ namespace RecipeDiscovery.Models
         // Nutritional information for the recipe.
         // TheMealDB API does not provide this, enriched with mock data.
         public Nutrition Nutrition { get; set; } = new Nutrition();
+
+        // Thumbnail URL for frontend
+        public string ImageUrl { get; set; } = string.Empty;
+
     }
 }
