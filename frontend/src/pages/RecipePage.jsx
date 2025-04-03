@@ -12,21 +12,27 @@ const RecipePage = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
-  // Query to get the recipe details
+  // Fetch the recipe details
   const { data, loading, error } = useQuery(GET_RECIPE_BY_ID, {
     variables: { id },
     skip: !!cachedRecipe,
     fetchPolicy: "network-only",
   });
 
-  // Query to check if the recipe is in user's favorites
-  const { data: favoritesData } = useQuery(GET_USER_FAVORITES);
+  // Fetch the current favorites to set the initial favorite state
+  const { data: favoritesData, loading: favoritesLoading } = useQuery(GET_USER_FAVORITES, {
+    fetchPolicy: "cache-and-network",
+    onCompleted: data => {
+      setIsFavorite(data.userFavorites.includes(id));
+    }
+  });
 
-  // Mutation to toggle the favorite status of the recipe
+  // Mutation to toggle the favorite status
   const [toggleFavorite, { loading: togglingFavorite, error: toggleError }] = useMutation(TOGGLE_FAVORITE_MUTATION, {
     variables: { recipeId: id },
+    refetchQueries: [{ query: GET_USER_FAVORITES }],
     onCompleted: (data) => {
-      setIsFavorite(!isFavorite); // Toggle the local favorite state
+      setIsFavorite(!isFavorite); // Toggle the local favorite state after mutation
       setSnackbarMessage(data.toggleFavoriteRecipe);
       setSnackbarOpen(true);
     }
@@ -38,21 +44,14 @@ const RecipePage = () => {
     if (stored) {
       const parsed = JSON.parse(stored);
       setCachedRecipe(parsed);
-      console.log(`Loaded recipe ${id} from cache`);
     }
-
-    // Determine if the recipe is in the favorites list
-    if (favoritesData && favoritesData.userFavorites.includes(id)) {
-      setIsFavorite(true);
-    }
-  }, [id, favoritesData]);
+  }, [id]);
 
   // Cache recipe details
   useEffect(() => {
     if (!cachedRecipe && !loading && data?.recipeById) {
       localStorage.setItem(`recipe-${id}`, JSON.stringify(data.recipeById));
       setCachedRecipe(data.recipeById);
-      console.log("Used GraphQL to get data.");
     }
   }, [data, cachedRecipe, loading, id]);
 
