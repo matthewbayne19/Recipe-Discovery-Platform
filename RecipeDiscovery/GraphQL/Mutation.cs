@@ -14,38 +14,31 @@ namespace RecipeDiscovery.GraphQL
             _recipeService = recipeService; // Injecting the IRecipeService to validate and retrieve recipes
         }
 
-        // Mutation to add a recipe to user's favorites
-        public async Task<string> AddFavoriteRecipe(string userId, string recipeId)
+        // Mutation to toggle a recipe in user's favorites
+        public async Task<string> ToggleFavoriteRecipe(string userId, string recipeId)
         {
-            // Validate that both userId and recipeId are provided
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(recipeId))
             {
-                return "User ID and Recipe ID are required."; // Return an error if either ID is missing
+                return "User ID and Recipe ID are required.";
             }
 
-            // Validate the recipe ID format, expecting a 5-digit numeric string
-            if (recipeId.Length != 5 || !recipeId.All(char.IsDigit))
-            {
-                return "Invalid recipe ID."; // Return an error if the recipe ID doesn't meet the format
-            }
-
-            // Check if the recipe exists in the database using the recipe service
             var recipe = await _recipeService.GetRecipeById(recipeId);
             if (recipe == null)
             {
-                return "Recipe not found."; // Return an error if the recipe ID doesn't match any existing recipe
+                return "Recipe not found.";
             }
 
-            // Check if the recipe is already in the user's favorites
+            // Toggle the recipe in the user's favorites
+            await _userService.ToggleFavorite(userId, recipeId);
             var favorites = await _userService.GetUserFavorites(userId);
-            if (favorites.Any(f => f == recipeId)) 
+            if (favorites.Contains(recipeId))
             {
-                return "Recipe is already in favorites."; // Return a message if the recipe is already in the favorites list
+                return "Recipe added to favorites.";
             }
-
-            // Add the recipe to the user's favorites list
-            await _userService.AddUserFavorite(userId, recipeId); 
-            return "Recipe added to favorites successfully."; // Return a success message after adding to favorites
+            else
+            {
+                return "Recipe removed from favorites.";
+            }
         }
     }
 }

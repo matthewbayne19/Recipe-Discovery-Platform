@@ -1,17 +1,14 @@
-using RecipeDiscovery.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RecipeDiscovery.Services
 {
-    // Interface for the User Service
-    // Defines the contract for managing user favorite recipes
     public interface IUserService
     {
-        // Method to get the list of favorite recipe IDs for a given user
-        // Returns an empty list if the user has no favorites
+        // Retrieve a list of favorite recipe IDs for a user
         Task<List<string>> GetUserFavorites(string userId);
 
-        // Method to add a recipe to a user's favorites list
-        // Ensures that duplicate entries are not added
-        Task AddUserFavorite(string userId, string recipeId);
+        // Toggle a recipe in the user's favorites
+        Task<bool> ToggleFavorite(string userId, string recipeId);
     }
 }
