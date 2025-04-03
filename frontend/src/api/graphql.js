@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-// Example: query for a recipe by ID
+// query for a recipe by ID
 export const GET_RECIPE_BY_ID = gql`
   query GetRecipeById($id: String!) {
     recipeById(id: $id) {
@@ -14,3 +14,5 @@ export const GET_RECIPE_BY_ID = gql`
     }
   }
 `;
+
+// mutation ...
