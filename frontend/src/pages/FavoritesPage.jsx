@@ -8,10 +8,13 @@ const FavoritesPage = () => {
   const client = useApolloClient();
   const [favoriteRecipes, setFavoriteRecipes] = useState([]);
   const [loadingDetails, setLoadingDetails] = useState(false);
-  const { data, loading, error } = useQuery(GET_USER_FAVORITES);
+  const { data, loading, error } = useQuery(GET_USER_FAVORITES, {
+    fetchPolicy: 'network-only', 
+  });
 
   useEffect(() => {
     if (!loading && data && data.userFavorites) {
+      console.log("Favorite IDs fetched:", data.userFavorites);
       fetchFavoriteRecipesDetails(data.userFavorites);
     }
   }, [data, loading]);

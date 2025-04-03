@@ -16,9 +16,9 @@ export const fetchRecipes = async (params = {}) => {
 };
 
 // Add a recipe to favorites (hardcoded user ID)
-export const addFavorite = async (recipeId, userId = "1") => {
-  await axios.post(`${API_URL}/users/${userId}/favorites`, { recipeId }, { headers });
-  console.log(`USED REST POST /users/${userId}/favorites TO ADD RECIPE ${recipeId}`);
+export const toggleFavorite = async (recipeId, userId = "1") => {
+  await axios.post(`${API_URL}/users/${userId}/favorites/toggle`, { recipeId }, { headers });
+  console.log(`USED REST POST /users/${userId}/favorites/toggle TO TOGGLE RECIPE ${recipeId}`);
 };
 
 // Get a user's favorite recipes
