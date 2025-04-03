@@ -5,13 +5,20 @@ import RecipeCard from "./RecipeCard";
 // RecipeList receives recipes via props
 const RecipeList = ({ recipes }) => {
   return (
-    <Grid container spacing={2} justifyContent="center">
-      {recipes.map((recipe) => (
+    <Grid
+    container
+    spacing={2}
+    justifyContent="center"
+    alignItems="flex-start"
+    sx={{ maxWidth: 1100, margin: '0 auto' }} 
+    >
+    {recipes.map((recipe) => (
         <Grid item key={recipe.id}>
-          <RecipeCard recipe={recipe} />
+        <RecipeCard recipe={recipe} />
         </Grid>
-      ))}
+    ))}
     </Grid>
+
   );
 };
 

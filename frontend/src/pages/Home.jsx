@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Container, Typography, CircularProgress, Alert, Grid,
-  Pagination, FormControl, InputLabel, Select, MenuItem, Box
+  Pagination, FormControl, InputLabel, Select, MenuItem, Box, TextField
 } from '@mui/material';
 import RecipeList from '../components/RecipeList';
 import axios from 'axios';
@@ -16,10 +16,23 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Load from cache on mount
+  const [cuisine, setCuisine] = useState('');
+  const [ingredient, setIngredient] = useState('');
+  const [debouncedCuisine, setDebouncedCuisine] = useState('');
+  const [debouncedIngredient, setDebouncedIngredient] = useState('');
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebouncedCuisine(cuisine);
+      setDebouncedIngredient(ingredient);
+      setPage(1);
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [cuisine, ingredient]);
+
   useEffect(() => {
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (saved) {
+    if (saved && !debouncedCuisine && !debouncedIngredient) {
       const parsed = JSON.parse(saved);
       const cachedPage = parsed[pageSize]?.[page];
       if (cachedPage) {
@@ -31,7 +44,7 @@ const Home = () => {
       }
     }
     fetchRecipes();
-  }, [page, pageSize]);
+  }, [page, pageSize, debouncedCuisine, debouncedIngredient]);
 
   const fetchRecipes = async () => {
     setLoading(true);
@@ -40,7 +53,12 @@ const Home = () => {
     try {
       const response = await axios.get('http://localhost:5011/recipes', {
         headers: { 'X-API-KEY': 'simple-api-key' },
-        params: { page, pageSize }
+        params: {
+          page,
+          pageSize,
+          cuisine: debouncedCuisine,
+          ingredient: debouncedIngredient
+        }
       });
 
       const result = {
@@ -53,15 +71,17 @@ const Home = () => {
       setRecipes(result.recipes);
       setTotalCount(result.totalCount);
 
-      const existing = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '{}');
-      const updated = {
-        ...existing,
-        [pageSize]: {
-          ...existing[pageSize],
-          [page]: result
-        }
-      };
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+      if (!debouncedCuisine && !debouncedIngredient) {
+        const existing = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '{}');
+        const updated = {
+          ...existing,
+          [pageSize]: {
+            ...existing[pageSize],
+            [page]: result
+          }
+        };
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+      }
     } catch (err) {
       setError('Failed to load recipes.');
       console.error(err);
@@ -73,35 +93,71 @@ const Home = () => {
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
-    <Container sx={{ paddingY: 4 }}>
-      <Typography variant="h4" gutterBottom>
+    <Container
+      maxWidth="lg"
+      sx={{
+        paddingY: 4,
+        minHeight: '90vh',
+        display: 'flex',
+        flexDirection: 'column'
+      }}
+    >
+      {/* Page Title */}
+      <Typography variant="h4" align="center" gutterBottom>
         Recipe Discovery
       </Typography>
 
-      {/* Recipe content */}
-      <Box minHeight="500px" display="flex" alignItems="center" justifyContent="center">
-        {loading && <CircularProgress />}
-        {error && <Alert severity="error">{error}</Alert>}
-        {!loading && !error && (
-          <Grid container spacing={2}>
+      {/* Filters */}
+      <Box mb={3} display="flex" justifyContent="center" gap={2}>
+        <TextField
+          label="Filter by cuisine"
+          variant="outlined"
+          value={cuisine}
+          onChange={(e) => setCuisine(e.target.value)}
+        />
+        <TextField
+          label="Filter by ingredient"
+          variant="outlined"
+          value={ingredient}
+          onChange={(e) => setIngredient(e.target.value)}
+        />
+      </Box>
+
+      {/* Recipe Content */}
+      <Box flex={1} display="flex" flexDirection="column" justifyContent="center" minHeight="70vh">
+        {loading ? (
+          <Box display="flex" alignItems="center" justifyContent="center" minHeight="300px">
+            <CircularProgress />
+          </Box>
+        ) : error ? (
+          <Alert severity="error">{error}</Alert>
+        ) : recipes.length === 0 ? (
+          <Box display="flex" justifyContent="center">
+            <Alert severity="info" sx={{ textAlign: 'center', maxWidth: 400 }}>
+              No recipes found for this filter. Please try another filter.
+            </Alert>
+          </Box>
+        ) : (
+          <Grid container spacing={2} justifyContent="center">
             <RecipeList recipes={recipes} />
           </Grid>
         )}
       </Box>
 
-      {/* Pagination Controls anchored near bottom */}
+      {/* Pagination Controls */}
       <Box
-        position="fixed"
-        bottom="5vh"
-        left="0"
-        width="100%"
+        mt="5vh"
+        py={2}
+        borderTop="1px solid #ddd"
         display="flex"
         justifyContent="center"
         alignItems="center"
         gap={4}
-        zIndex={10}
-        bgcolor="white"
-        py={1}
+        sx={{
+          backgroundColor: 'white',
+          position: 'relative',
+          bottom: 0
+        }}
       >
         <FormControl size="small" disabled={loading} sx={{ minWidth: 120 }}>
           <InputLabel>Per Page</InputLabel>
