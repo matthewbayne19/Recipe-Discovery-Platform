@@ -100,14 +100,15 @@ const Home = () => {
         flexDirection: 'column'
       }}
     >
-              <Button
-        variant="contained"
-        color="primary"
-        onClick={() => navigate('/favorites')}
-        sx={{ alignSelf: 'flex-end', mb: 2 }}
-      >
-        View Favorites
-      </Button>
+        <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate('/favorites')}
+            sx={{ alignSelf: 'flex-end', mb: 2 }}
+        >
+            View Favorites
+        </Button>
+
       {/* Filters */}
       <Box
         mb={3}
