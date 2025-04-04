@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery, useApolloClient } from "@apollo/client";
-import { Container, Typography, Grid, CircularProgress, Alert, Link } from '@mui/material';
+import { Container, Typography, Grid, CircularProgress, Alert, Link, Box, Button } from '@mui/material';
 import RecipeCard from '../components/RecipeCard';
 import { GET_USER_FAVORITES, GET_RECIPE_BY_ID } from '../api/graphql';
 import { useNavigate } from 'react-router-dom';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';  // Icon for the back button
 
 const FavoritesPage = () => {
   const client = useApolloClient();
@@ -55,24 +56,29 @@ const FavoritesPage = () => {
   }
 
   return (
-    <Container sx={{ py: 4 }}>
-      <Typography variant="h4" gutterBottom>
+    <Container sx={{ py: 4, minHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
+      <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/')} sx={{ position: 'absolute', top: 30, left: 30 }}>
+        Home
+      </Button>
+      <Typography variant="h4" gutterBottom sx={{ mt: 2, alignSelf: 'flex-start' }}>
         Your Favorite Recipes
       </Typography>
       {favoriteRecipes.length === 0 ? (
-        <Typography variant="subtitle1" sx={{ mt: 2 }}>
+        <Typography variant="subtitle1" sx={{ mt: 2, alignSelf: 'center' }}>
           No favorites added yet. <Link component="button" variant="body2" onClick={() => navigate('/')}>
             Explore recipes
           </Link> and add them to favorites for them to appear here.
         </Typography>
       ) : (
-        <Grid container spacing={2}>
-          {favoriteRecipes.map((recipe) => (
-            <Grid item key={recipe.id} xs={12} sm={6} md={4}>
-              <RecipeCard recipe={recipe} />
-            </Grid>
-          ))}
-        </Grid>
+        <Box flex={1} display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+          <Grid container spacing={2} justifyContent="center">
+            {favoriteRecipes.map((recipe) => (
+              <Grid item key={recipe.id} xs={12} sm={6} md={4}>
+                <RecipeCard recipe={recipe} />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
       )}
     </Container>
   );
