@@ -20,7 +20,7 @@ const RecipePage = () => {
   });
 
   // Fetch the current favorites to set the initial favorite state
-  const { data: favoritesData, loading: favoritesLoading } = useQuery(GET_USER_FAVORITES, {
+  useQuery(GET_USER_FAVORITES, {
     fetchPolicy: "cache-and-network",
     onCompleted: data => {
       setIsFavorite(data.userFavorites.includes(id));

@@ -6,7 +6,19 @@ const RecipeCard = ({ recipe }) => {
   const navigate = useNavigate();
 
   return (
-    <Card sx={{ width: 300, m: 2, cursor: "pointer" }} onClick={() => navigate(`/recipes/${recipe.id}`)}>
+    <Card 
+      sx={{ 
+        width: 300, 
+        m: 2, 
+        cursor: "pointer",
+        transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+        "&:hover": {
+          transform: "scale(1.05)", // Enlarges the card slightly on hover
+          boxShadow: "0 4px 20px rgba(0,0,0,0.2)" // Adds shadow effect for depth
+        }
+      }} 
+      onClick={() => navigate(`/recipes/${recipe.id}`)}
+    >
       <CardMedia
         component="img"
         height="180"
