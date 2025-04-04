@@ -15,6 +15,13 @@ export const fetchRecipes = async (params = {}) => {
   return response.data;
 };
 
+// Search recipes by name using the new search endpoint
+export const searchRecipesByName = async (name) => {
+    const response = await axios.get(`${API_URL}/recipes/search?name=${encodeURIComponent(name)}`, { headers });
+    console.log("USED REST GET /recipes/search TO SEARCH BY NAME");
+    return response.data;
+};
+  
 // Add a recipe to favorites (hardcoded user ID)
 export const toggleFavorite = async (recipeId, userId = "1") => {
   await axios.post(`${API_URL}/users/${userId}/favorites/toggle`, { recipeId }, { headers });

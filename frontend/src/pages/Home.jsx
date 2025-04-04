@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import {
   Container, CircularProgress, Alert, Grid,
-  Pagination, FormControl, InputLabel, Select, MenuItem, Box, TextField, Button
+  Pagination, FormControl, InputLabel, Select, MenuItem, Box, TextField, Button,
+  InputAdornment, IconButton
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import RecipeList from '../components/RecipeList';
 import { fetchRecipes } from '../api/rest';  // Import the REST API method
+import ClearIcon from '@mui/icons-material/Clear';
 
 const LOCAL_STORAGE_KEY = 'recipe_cache';
 
@@ -88,6 +90,14 @@ const Home = () => {
     handleFetch();
   }, [page, pageSize, debouncedCuisine, debouncedIngredient]);
 
+  const handleClearCuisine = () => {
+    setFilterCuisine('');
+  };
+
+  const handleClearIngredient = () => {
+    setFilterIngredient('');
+  };
+
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
@@ -123,12 +133,36 @@ const Home = () => {
           variant="outlined"
           value={filterCuisine}
           onChange={(e) => setFilterCuisine(e.target.value)}
+          InputProps={{
+            endAdornment: filterCuisine && (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={handleClearCuisine}
+                  edge="end"
+                >
+                  <ClearIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <TextField
           label="Filter by ingredient"
           variant="outlined"
           value={filterIngredient}
           onChange={(e) => setFilterIngredient(e.target.value)}
+          InputProps={{
+            endAdornment: filterIngredient && (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={handleClearIngredient}
+                  edge="end"
+                >
+                  <ClearIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
       </Box>
 
