@@ -92,6 +92,37 @@ namespace RecipeDiscovery.Services
             return recipe;
         }
 
+        public async Task<List<Recipe>> GetRecipesByName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return new List<Recipe>(); // Return empty list if the search query is null or whitespace
+
+            var response = await _httpClient.GetStringAsync($"https://www.themealdb.com/api/json/v1/1/search.php?s={name}");
+            var json = JsonDocument.Parse(response);
+            var allRecipes = new List<Recipe>();
+
+            if (json.RootElement.TryGetProperty("meals", out JsonElement meals) && meals.ValueKind != JsonValueKind.Null)
+            {
+                allRecipes = meals.EnumerateArray().Select(meal => new Recipe
+                {
+                    Id = meal.GetProperty("idMeal").GetString() ?? "",
+                    Name = meal.GetProperty("strMeal").GetString() ?? "",
+                    Description = meal.GetProperty("strInstructions").GetString() ?? "",
+                    Ingredients = ExtractIngredientNames(meal),
+                    Cuisine = meal.GetProperty("strArea").GetString() ?? "",
+                    ImageUrl = meal.GetProperty("strMealThumb").GetString() ?? ""
+                }).ToList();
+            }
+
+            // Optionally enrich each recipe with additional details
+            foreach (var recipe in allRecipes)
+            {
+                await _enrichmentService.Enrich(recipe);
+            }
+
+            return allRecipes;
+        }
+
         private static List<string> ExtractIngredientNames(JsonElement meal)
         {
             var ingredients = new List<string>();

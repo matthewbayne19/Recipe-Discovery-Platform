@@ -55,5 +55,20 @@ namespace RecipeDiscovery.GraphQL
             var favorites = await _userService.GetUserFavorites(userId);
             return favorites;
         }
+
+        // Fetch recipes by name with filtering and sorting
+        [UseFiltering]
+        [UseSorting]
+        public async Task<IEnumerable<Recipe>> GetRecipesByName(string name)
+        {
+            var recipes = await _recipeService.GetRecipesByName(name);
+
+            foreach (var recipe in recipes)
+            {
+                await _enrichmentService.Enrich(recipe);
+            }
+
+            return recipes.AsQueryable();
+        }
     }
 }

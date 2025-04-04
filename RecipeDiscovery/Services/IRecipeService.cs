@@ -1,4 +1,6 @@
 using RecipeDiscovery.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RecipeDiscovery.Services
 {
@@ -13,5 +15,9 @@ namespace RecipeDiscovery.Services
         // Method to fetch a single recipe by its unique ID
         // Returns null if the recipe does not exist
         Task<Recipe?> GetRecipeById(string id);
+
+        // Method to retrieve recipes based on a search term for the name
+        // Returns a list of recipes that match the search term
+        Task<List<Recipe>> GetRecipesByName(string name);
     }
 }

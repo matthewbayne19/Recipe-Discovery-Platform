@@ -110,5 +110,17 @@ namespace RecipeDiscovery.Controllers
 
             return Ok(recipe); // Return the found recipe
         }
+
+        [HttpGet("search")] // Endpoint for fetching recipes by searching the name
+        public async Task<IActionResult> GetRecipesByName([FromQuery] string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return BadRequest("Search query is required.");
+            }
+
+            var recipes = await _recipeService.GetRecipesByName(name);
+            return Ok(recipes); // Always return Ok, even if the list is empty
+        }
     }
 }
