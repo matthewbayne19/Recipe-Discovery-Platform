@@ -9,39 +9,43 @@ import StarIcon from "@mui/icons-material/Star";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { GET_RECIPE_BY_ID, TOGGLE_FAVORITE_MUTATION, GET_USER_FAVORITES } from "../api/graphql";
-import NavigationButton from '../components/NavigationButton';  // Ensure this path is correct for your project
+import NavigationButton from '../components/NavigationButton';
 
 const RecipePage = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
-  const [cachedRecipe, setCachedRecipe] = useState(null);
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const { id } = useParams(); // Gets the recipe ID from the URL
+  const [cachedRecipe, setCachedRecipe] = useState(null); // Stores recipe data from local storage
+  const [isFavorite, setIsFavorite] = useState(false); // Tracks if the recipe is favorited
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // Controls visibility of the snackbar
+  const [snackbarMessage, setSnackbarMessage] = useState(''); // Message to display in the snackbar
 
+  // GraphQL query to fetch recipe by ID
   const { data, loading, error } = useQuery(GET_RECIPE_BY_ID, {
     variables: { id },
-    skip: !!cachedRecipe,
-    fetchPolicy: "network-only",
+    skip: !!cachedRecipe, // Skip query if we already have cached data
+    fetchPolicy: "network-only", // Ensures fresh data is fetched
   });
 
+  // GraphQL query to check if the recipe is in user's favorites
   useQuery(GET_USER_FAVORITES, {
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "cache-and-network", // Optimistic UI response
     onCompleted: data => {
-      setIsFavorite(data.userFavorites.includes(id));
+      setIsFavorite(data.userFavorites.includes(id)); // Update favorite status based on response
     }
   });
 
+  // Mutation to toggle favorite status
   const [toggleFavorite, { loading: togglingFavorite, error: toggleError }] = useMutation(TOGGLE_FAVORITE_MUTATION, {
     variables: { recipeId: id },
     refetchQueries: [{ query: GET_USER_FAVORITES }],
     onCompleted: (data) => {
       setIsFavorite(!isFavorite);
-      setSnackbarMessage(data.toggleFavoriteRecipe);
+      setSnackbarMessage(data.toggleFavoriteRecipe); // Show result of toggle operation
       setSnackbarOpen(true);
     }
   });
 
+  // Load recipe from local storage
   useEffect(() => {
     const stored = localStorage.getItem(`recipe-${id}`);
     if (stored) {
@@ -50,6 +54,7 @@ const RecipePage = () => {
     }
   }, [id]);
 
+  // Cache recipe data once fetched
   useEffect(() => {
     if (!cachedRecipe && !loading && data?.recipeById) {
       localStorage.setItem(`recipe-${id}`, JSON.stringify(data.recipeById));
@@ -57,6 +62,7 @@ const RecipePage = () => {
     }
   }, [data, cachedRecipe, loading, id]);
 
+  // Function to handle favorite toggle
   const handleToggleFavorite = async () => {
     try {
       await toggleFavorite();
@@ -67,10 +73,12 @@ const RecipePage = () => {
     }
   };
 
+  // Close snackbar
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
   };
 
+  // Render loading or error states
   if (loading && !cachedRecipe) {
     return (
       <Box
@@ -89,6 +97,7 @@ const RecipePage = () => {
 
   const recipe = cachedRecipe || data?.recipeById;
 
+  // Main content render
   return (
     <Box p={3} sx={{ maxWidth: 900, margin: 'auto' }}>
       <Box>
@@ -130,7 +139,7 @@ const RecipePage = () => {
               </Button>
             </Tooltip>
           </Box>
-          <Typography variant="subtitle1" gutterBottom sx={{ fontSize: '1.1rem' }}>
+          <Typography variant="subtitle1" gutterBottom>
             <strong>Cuisine:</strong> {recipe.cuisine} | <strong>Prep Time:</strong> {recipe.preparationTime} | <strong>Difficulty:</strong> {recipe.difficultyLevel}
             {recipe.nutrition && (
                 <Box mt={1}>

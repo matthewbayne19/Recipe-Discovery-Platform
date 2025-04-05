@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useQuery, useApolloClient } from "@apollo/client";
 import {
-  Container, Typography, Grid, CircularProgress, Alert, Link, Box
+  Container, Typography, CircularProgress, Alert, Link
 } from '@mui/material';
-import RecipeCard from '../components/RecipeCard';
+import RecipeList from '../components/RecipeList';  // Import RecipeList component
 import { GET_USER_FAVORITES, GET_RECIPE_BY_ID } from '../api/graphql';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import NavigationButton from '../components/NavigationButton'; // Make sure this import path is correct
+import NavigationButton from '../components/NavigationButton';
 
+// Component for displaying user's favorite recipes
 const FavoritesPage = () => {
   const client = useApolloClient();
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ const FavoritesPage = () => {
   const [loadingDetails, setLoadingDetails] = useState(false);
   const { data, loading, error } = useQuery(GET_USER_FAVORITES);
 
+  // Fetches detailed data for favorite recipes
   const fetchFavoriteRecipesDetails = useCallback(async (recipeIds) => {
     setLoadingDetails(true);
     try {
@@ -34,12 +36,14 @@ const FavoritesPage = () => {
     setLoadingDetails(false);
   }, [client]);
 
+  // Load recipe details after favorites IDs are fetched
   useEffect(() => {
     if (!loading && data?.userFavorites?.length > 0) {
       fetchFavoriteRecipesDetails(data.userFavorites);
     }
   }, [data, loading, fetchFavoriteRecipesDetails]);
 
+  // Handle loading states
   if (loading || loadingDetails) {
     return (
       <Container sx={{ py: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
@@ -48,6 +52,7 @@ const FavoritesPage = () => {
     );
   }
 
+  // Handle error state
   if (error) {
     return (
       <Container sx={{ py: 4 }}>
@@ -56,6 +61,7 @@ const FavoritesPage = () => {
     );
   }
 
+  // Render the favorite recipes page
   return (
     <Container sx={{ py: 4, minHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
       <NavigationButton
@@ -89,15 +95,7 @@ const FavoritesPage = () => {
           and add them to favorites for them to appear here.
         </Typography>
       ) : (
-        <Box flex={1} display="flex" flexDirection="column" justifyContent="flex-start" alignItems="center" sx={{ width: '100%' }}>
-          <Grid container spacing={2} justifyContent="center">
-            {favoriteRecipes.map((recipe) => (
-              <Grid item key={recipe.id} xs={12} sm={6} md={4}>
-                <RecipeCard recipe={recipe} />
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
+        <RecipeList recipes={favoriteRecipes} />  // Using RecipeList to display recipes
       )}
     </Container>
   );

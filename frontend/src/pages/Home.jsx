@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Container, CircularProgress, Alert, Grid,
-  Pagination, FormControl, InputLabel, Select, MenuItem, Box
+  Container, CircularProgress, Alert, Grid, FormControl, InputLabel, Select, MenuItem, Box
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import RecipeList from '../components/RecipeList';
@@ -10,24 +9,25 @@ import SearchBar from '../components/SearchBar';
 import Filter from '../components/Filter';
 import NavigationButton from '../components/NavigationButton';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import Pagination from '../components/Pagination';
 
 const LOCAL_STORAGE_KEY = 'recipe_cache';
 
 const Home = () => {
-  const [recipes, setRecipes] = useState([]);
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(9);
-  const [totalCount, setTotalCount] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [filterCuisine, setFilterCuisine] = useState(localStorage.getItem('filterCuisine') || '');
-  const [filterIngredient, setFilterIngredient] = useState(localStorage.getItem('filterIngredient') || '');
-  const [debouncedCuisine, setDebouncedCuisine] = useState(filterCuisine);
-  const [debouncedIngredient, setDebouncedIngredient] = useState(filterIngredient);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [recipes, setRecipes] = useState([]); // Stores the recipes
+  const [page, setPage] = useState(1); // Current page number
+  const [pageSize, setPageSize] = useState(9); // Recipes per page
+  const [totalCount, setTotalCount] = useState(0); // Total number of recipes
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(null); // Error state
+  const [filterCuisine, setFilterCuisine] = useState(localStorage.getItem('filterCuisine') || ''); // Cuisine filter
+  const [filterIngredient, setFilterIngredient] = useState(localStorage.getItem('filterIngredient') || ''); // Ingredient filter
+  const [debouncedCuisine, setDebouncedCuisine] = useState(filterCuisine); // Debounced cuisine filter
+  const [debouncedIngredient, setDebouncedIngredient] = useState(filterIngredient); // Debounced ingredient filter
+  const [searchTerm, setSearchTerm] = useState(''); // Search term state
   const navigate = useNavigate();
 
-  // Debounce filters
+  // Debounce filters to reduce API calls
   useEffect(() => {
     const timeout = setTimeout(() => {
       setDebouncedCuisine(filterCuisine);
@@ -39,6 +39,7 @@ const Home = () => {
     return () => clearTimeout(timeout);
   }, [filterCuisine, filterIngredient]);
 
+  // Fetch recipes from the API or cache
   useEffect(() => {
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
   
@@ -53,8 +54,6 @@ const Home = () => {
           cuisine: debouncedCuisine,
           ingredient: debouncedIngredient
         });
-
-        console.log(`Page ${page} (pageSize ${pageSize}) fetched from API`);
   
         setRecipes(result.recipes);
         setTotalCount(result.totalCount);
@@ -82,7 +81,6 @@ const Home = () => {
       const parsed = JSON.parse(saved);
       const cachedPage = parsed[pageSize]?.[page];
       if (cachedPage) {
-        console.log(`Page ${page} (pageSize ${pageSize}) loaded from localStorage`);
         setRecipes(cachedPage.recipes);
         setTotalCount(cachedPage.totalCount);
         setLoading(false);
@@ -93,14 +91,17 @@ const Home = () => {
     handleFetch();
   }, [page, pageSize, debouncedCuisine, debouncedIngredient]);
 
+  // Clear cuisine filter
   const handleClearCuisine = () => {
     setFilterCuisine('');
   };
 
+  // Clear ingredient filter
   const handleClearIngredient = () => {
     setFilterIngredient('');
   };
 
+  // Clear search and fetch default recipe list
   const handleClearSearch = async () => {
     setSearchTerm('');
     setPage(1);
@@ -115,17 +116,17 @@ const Home = () => {
         ingredient: debouncedIngredient
       });
   
-      console.log('Reset to default recipe list after clearing search');
       setRecipes(result.recipes);
       setTotalCount(result.totalCount);
     } catch (err) {
       console.error('Failed to reload recipes after clearing search:', err);
       setError('Failed to load recipes.');
     } finally {
-      setLoading(false); // <-- this makes the spinner disappear once done
+      setLoading(false);
     }
   };
 
+  // Handle recipe search
   const handleSearch = async () => {
     if (!searchTerm.trim()) return;
     setLoading(true);
@@ -147,28 +148,16 @@ const Home = () => {
 
   return (
     <Container maxWidth="lg" sx={{ paddingY: 4, minHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
-    <NavigationButton
+      <NavigationButton
         icon={<FavoriteIcon />}
         onClick={() => navigate('/favorites')}
         label="View Favorites"
         positionStyles={{ top: 30, right: 30 }}
-    />
+      />
 
-    <Box
-        mb={3}
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        gap={2}
-        flexWrap="wrap"
-    >
+      <Box mb={3} display="flex" justifyContent="center" alignItems="center" gap={2} flexWrap="wrap">
         <Box sx={{ minWidth: 250, flex: 1 }}>
-            <SearchBar
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                handleSearch={handleSearch}
-                handleClearSearch={handleClearSearch}
-            />
+            <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} handleSearch={handleSearch} handleClearSearch={handleClearSearch} />
         </Box>
         <Box sx={{ minWidth: 180, flex: 1 }}>
             <Filter label="Filter by cuisine" value={filterCuisine} onChange={(e) => setFilterCuisine(e.target.value)} onClear={handleClearCuisine} />
@@ -176,17 +165,10 @@ const Home = () => {
         <Box sx={{ minWidth: 180, flex: 1 }}>
             <Filter label="Filter by ingredient" value={filterIngredient} onChange={(e) => setFilterIngredient(e.target.value)} onClear={handleClearIngredient} />
         </Box>
-    </Box>
+      </Box>
 
       {/* Main content */}
-      <Box
-        flex={1}
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="80vh"
-      >
+      <Box flex={1} display="flex" flexDirection="column" justifyContent="center" alignItems="center" minHeight="80vh">
         {loading ? (
           <CircularProgress />
         ) : error ? (
@@ -202,41 +184,15 @@ const Home = () => {
         )}
       </Box>
 
-      {/* Pagination */}
-      <Box
-        mt="3vh"
-        borderTop="1px solid #ddd"
-        py={2}
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        gap={4}
-        sx={{ backgroundColor: 'white' }}
-      >
-        <FormControl size="small" disabled={loading} sx={{ minWidth: 120 }}>
-          <InputLabel>Per Page</InputLabel>
-          <Select
-            value={pageSize}
-            label="Per Page"
-            onChange={(e) => {
-              setPageSize(e.target.value);
-              setPage(1);
-            }}
-          >
-            {[9, 18, 27, 36].map(size => (
-              <MenuItem key={size} value={size}>{size}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <Pagination
-          count={totalPages}
-          page={page}
-          onChange={(_, newPage) => setPage(newPage)}
-          color="primary"
-          disabled={loading}
-        />
-      </Box>
+      {/* Pagination controls */}
+      <Pagination
+        pageSize={pageSize}
+        setPageSize={setPageSize}
+        totalPages={totalPages}
+        page={page}
+        setPage={setPage}
+        isLoading={loading}
+      />
     </Container>
   );
 };
