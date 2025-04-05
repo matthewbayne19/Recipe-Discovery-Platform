@@ -1,70 +1,122 @@
-# Getting Started with Create React App
+```markdown
+# Recipe Discovery Platform
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A full-stack recipe discovery web application built with a .NET backend and React frontend. Users can browse, filter, search, and favorite recipes. Both REST and GraphQL APIs are used to demonstrate flexibility and effective data management.
 
-## Available Scripts
+## Tech Stack
 
-In the project directory, you can run:
+- **Frontend**: React, React Router, MUI (Material UI), Apollo Client
+- **Backend**: .NET, C#, HotChocolate (GraphQL)
+- **API**: TheMealDB (external REST API)
+- **Data Caching**: LocalStorage (browser)
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Getting Started
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 1. Clone the repository
 
-### `npm test`
+```bash
+git clone https://github.com/matthewbayne19/Bayne-Recipe-Discovery-Solution.git
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+### 2. Start the Backend
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Make sure you have the .NET SDK installed.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+cd Bayne-Recipe-Discovery-Solution/RecipeDiscovery
+dotnet run
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+This will start the backend server on `http://localhost:5011`.
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 3. Start the Frontend
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+cd Bayne-Recipe-Discovery-Solution/frontend
+npm install
+npm start
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+This starts the development server at `http://localhost:3000`.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
 
-## Learn More
+### 4. Run Tests
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+npm test
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+This runs unit tests using **React Testing Library**.
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Features & Design Decisions
 
-### Analyzing the Bundle Size
+### API Integration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- **REST API** was used for:
+  - Fetching all recipes (with filters)
+  - Searching recipes by name
 
-### Making a Progressive Web App
+- **GraphQL** was used for:
+  - Fetching recipe by ID
+  - Fetching user favorites
+  - Adding/removing favorites
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+This dual approach demonstrates flexibility, with a preference for GraphQL due to its efficiency and better fit for structured queries like retrieving nested favorite data.
 
-### Advanced Configuration
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### User Interface & Experience
 
-### Deployment
+- **MUI** was used for UI components including Cards, Buttons, Grid, Alerts, Snackbars, etc.
+- Responsive **card grid layout** for browsing recipes, showing essential info up front.
+- Clicking a card opens a detailed view with full information and favorites functionality.
+- Consistent layout across all screens.
+- Card hover effect with scale-up for interactive responsiveness.
+- A **snackbar** provides user feedback when adding/removing favorites.
+- Loading states handled with **MUI CircularProgress** and **Alerts**.
+- Clean, minimal UI that stays out of the way of the core experience.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+---
 
-### `npm run build` fails to minify
+### Navigation & Layout
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Persistent **"View Favorites"** button in the top-right across pages for easy access.
+- Consistent **"Back to Home"** button in the top-left for navigation.
+- Pagination implemented with selectable items per page (9, 18, etc.) to maintain a neat 3-column grid.
+
+---
+
+### Filtering & Searching
+
+- Search bar and filters are placed at the top of the home page for visibility.
+- Users can filter by cuisine, ingredient, or both in conjunction.
+- Clear icons next to each input for fast removal of filters/search terms.
+- Search is executed only on button press to prevent unnecessary API calls.
+- If the search is cleared, the default recipe list is restored.
+- Loading spinner appears while the app resets back to default recipes after search is cleared.
+
+---
+
+### Favorites
+
+- User can favorite/unfavorite from both the detail page and view favorites list.
+- The "Add to Favorites" button switches to "Remove from Favorites" when already favorited.
+- Ingredients list has checkboxes for users to tick off what they have or need.
+- Favorites page shows all favorited recipes using the same card layout.
+
+---
+
+### Performance
+
+- Recipes are cached in **localStorage** per page and page size to minimize API calls and improve performance.
+- Individual recipes are cached after being fetched once for fast repeat viewing.
+```
