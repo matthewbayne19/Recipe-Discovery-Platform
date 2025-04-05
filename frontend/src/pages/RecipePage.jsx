@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@apollo/client";
 import {
-  CircularProgress, Typography, Box, Button, Tooltip, Snackbar,
-  Card, CardContent, List, ListItem, ListItemText, Checkbox, CardMedia, Divider
+  CircularProgress, Typography, Box, Tooltip, Snackbar,
+  Card, CardContent, List, ListItem, ListItemText, Checkbox, CardMedia, Divider, Button
 } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { GET_RECIPE_BY_ID, TOGGLE_FAVORITE_MUTATION, GET_USER_FAVORITES } from "../api/graphql";
+import NavigationButton from '../components/NavigationButton';  // Ensure this path is correct for your project
 
 const RecipePage = () => {
   const navigate = useNavigate();
@@ -90,34 +91,20 @@ const RecipePage = () => {
 
   return (
     <Box p={3} sx={{ maxWidth: 900, margin: 'auto' }}>
-      {/* Top navigation buttons */}
       <Box>
-        <Button
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate('/')}
-            sx={{
-            position: 'fixed',
-            top: 30,
-            left: 30,
-            zIndex: 10
-            }}
-        >
-            Home
-        </Button>
-        <Button
-            startIcon={<FavoriteIcon />}
-            onClick={() => navigate('/favorites')}
-            sx={{
-            position: 'fixed',
-            top: 30,
-            right: 30,
-            zIndex: 10
-            }}
-        >
-            View Favorites
-        </Button>
+        <NavigationButton
+          icon={<ArrowBackIcon />}
+          onClick={() => navigate('/')}
+          label="Home"
+          positionStyles={{ top: 30, left: 30 }}
+        />
+        <NavigationButton
+          icon={<FavoriteIcon />}
+          onClick={() => navigate('/favorites')}
+          label="View Favorites"
+          positionStyles={{ top: 30, right: 30 }}
+        />
       </Box>
-
       <Card raised sx={{ mb: 2 }}>
         {recipe.imageUrl && (
           <CardMedia
@@ -143,7 +130,6 @@ const RecipePage = () => {
               </Button>
             </Tooltip>
           </Box>
-
           <Typography variant="subtitle1" gutterBottom sx={{ fontSize: '1.1rem' }}>
             <strong>Cuisine:</strong> {recipe.cuisine} | <strong>Prep Time:</strong> {recipe.preparationTime} | <strong>Difficulty:</strong> {recipe.difficultyLevel}
             {recipe.nutrition && (
@@ -157,7 +143,6 @@ const RecipePage = () => {
           </Typography>
         </CardContent>
       </Card>
-
       <Card raised>
         <CardContent>
           <Typography variant="h6" gutterBottom component="div" sx={{ fontWeight: 'bold' }}>Ingredients:</Typography>
@@ -173,7 +158,6 @@ const RecipePage = () => {
           </List>
         </CardContent>
       </Card>
-
       <Card raised sx={{ mt: 2 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom component="div" sx={{ fontWeight: 'bold' }}>Directions:</Typography>
@@ -182,7 +166,6 @@ const RecipePage = () => {
           </Typography>
         </CardContent>
       </Card>
-
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}

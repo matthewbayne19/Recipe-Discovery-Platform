@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import {
   Container, CircularProgress, Alert, Grid,
-  Pagination, FormControl, InputLabel, Select, MenuItem, Box, TextField, Button,
-  InputAdornment, IconButton
+  Pagination, FormControl, InputLabel, Select, MenuItem, Box
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import RecipeList from '../components/RecipeList';
 import { fetchRecipes, searchRecipesByName } from '../api/rest'; 
-import ClearIcon from '@mui/icons-material/Clear';
+import SearchBar from '../components/SearchBar';
+import Filter from '../components/Filter';
+import NavigationButton from '../components/NavigationButton';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import SearchIcon from '@mui/icons-material/Search';
 
 const LOCAL_STORAGE_KEY = 'recipe_cache';
 
@@ -146,29 +146,14 @@ const Home = () => {
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
-    <Container
-      maxWidth="lg"
-      sx={{
-        paddingY: 4,
-        minHeight: '90vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}
-    >
-    <Button
-        startIcon={<FavoriteIcon />}
+    <Container maxWidth="lg" sx={{ paddingY: 4, minHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
+    <NavigationButton
+        icon={<FavoriteIcon />}
         onClick={() => navigate('/favorites')}
-        sx={{
-            position: 'fixed',
-            top: 30,
-            right: 30,
-            zIndex: 10
-        }}
-        >
-        View Favorites
-    </Button>
+        label="View Favorites"
+        positionStyles={{ top: 30, right: 30 }}
+    />
 
-    {/* Filters */}
     <Box
         mb={3}
         display="flex"
@@ -176,60 +161,22 @@ const Home = () => {
         alignItems="center"
         gap={2}
         flexWrap="wrap"
-        >
-        <TextField
-        label="Search by name"
-        variant="outlined"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        InputProps={{
-            endAdornment: (
-            <InputAdornment position="end">
-                {searchTerm && (
-                <IconButton onClick={handleClearSearch} edge="end">
-                    <ClearIcon />
-                </IconButton>
-                )}
-                <IconButton onClick={handleSearch} edge="end">
-                <SearchIcon />
-                </IconButton>
-            </InputAdornment>
-            ),
-        }}
-    />
-
-  <TextField
-    label="Filter by cuisine"
-    variant="outlined"
-    value={filterCuisine}
-    onChange={(e) => setFilterCuisine(e.target.value)}
-    InputProps={{
-      endAdornment: filterCuisine && (
-        <InputAdornment position="end">
-          <IconButton onClick={handleClearCuisine} edge="end">
-            <ClearIcon />
-          </IconButton>
-        </InputAdornment>
-      ),
-    }}
-  />
-  <TextField
-    label="Filter by ingredient"
-    variant="outlined"
-    value={filterIngredient}
-    onChange={(e) => setFilterIngredient(e.target.value)}
-    InputProps={{
-      endAdornment: filterIngredient && (
-        <InputAdornment position="end">
-          <IconButton onClick={handleClearIngredient} edge="end">
-            <ClearIcon />
-          </IconButton>
-        </InputAdornment>
-      ),
-    }}
-  />
-</Box>
-
+    >
+        <Box sx={{ minWidth: 250, flex: 1 }}>
+            <SearchBar
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                handleSearch={handleSearch}
+                handleClearSearch={handleClearSearch}
+            />
+        </Box>
+        <Box sx={{ minWidth: 180, flex: 1 }}>
+            <Filter label="Filter by cuisine" value={filterCuisine} onChange={(e) => setFilterCuisine(e.target.value)} onClear={handleClearCuisine} />
+        </Box>
+        <Box sx={{ minWidth: 180, flex: 1 }}>
+            <Filter label="Filter by ingredient" value={filterIngredient} onChange={(e) => setFilterIngredient(e.target.value)} onClear={handleClearIngredient} />
+        </Box>
+    </Box>
 
       {/* Main content */}
       <Box

@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useQuery, useApolloClient } from "@apollo/client";
 import {
-  Container, Typography, Grid, CircularProgress, Alert, Link, Box, Button
+  Container, Typography, Grid, CircularProgress, Alert, Link, Box
 } from '@mui/material';
 import RecipeCard from '../components/RecipeCard';
 import { GET_USER_FAVORITES, GET_RECIPE_BY_ID } from '../api/graphql';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import NavigationButton from '../components/NavigationButton'; // Make sure this import path is correct
 
 const FavoritesPage = () => {
   const client = useApolloClient();
@@ -57,9 +58,12 @@ const FavoritesPage = () => {
 
   return (
     <Container sx={{ py: 4, minHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
-      <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/')} sx={{ position: 'absolute', top: 30, left: 30 }}>
-        Home
-      </Button>
+      <NavigationButton
+        icon={<ArrowBackIcon />}
+        onClick={() => navigate('/')}
+        label="Home"
+        positionStyles={{ top: 30, left: 30 }}
+      />
       <Typography variant="h4" gutterBottom sx={{ mt: 2, mb: 5, alignSelf: 'flex-start' }}>
         Your Favorite Recipes
       </Typography>
