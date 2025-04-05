@@ -104,6 +104,8 @@ const Home = () => {
   const handleClearSearch = async () => {
     setSearchTerm('');
     setPage(1);
+    setLoading(true);
+    setError(null);
   
     try {
       const result = await fetchRecipes({
@@ -119,6 +121,8 @@ const Home = () => {
     } catch (err) {
       console.error('Failed to reload recipes after clearing search:', err);
       setError('Failed to load recipes.');
+    } finally {
+      setLoading(false); // <-- this makes the spinner disappear once done
     }
   };
 
