@@ -13,8 +13,8 @@ const RecipeCard = ({ recipe }) => {
         cursor: "pointer",
         transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
         "&:hover": {
-          transform: "scale(1.10)", // Enlarges the card slightly on hover
-          boxShadow: "0 4px 20px rgba(0,0,0,0.2)" // Adds shadow effect for depth
+          transform: "scale(1.10)", 
+          boxShadow: "0 4px 20px rgba(0,0,0,0.2)" 
         }
       }} 
       onClick={() => navigate(`/recipes/${recipe.id}`)}

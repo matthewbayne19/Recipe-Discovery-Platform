@@ -70,7 +70,20 @@ const RecipePage = () => {
     setSnackbarOpen(false);
   };
 
-  if (loading && !cachedRecipe) return <CircularProgress />;
+  if (loading && !cachedRecipe) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '80vh',
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
   if (error || toggleError) return <Typography>Error loading recipe.</Typography>;
 
   const recipe = cachedRecipe || data?.recipeById;
