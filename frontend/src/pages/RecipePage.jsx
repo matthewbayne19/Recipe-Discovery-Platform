@@ -146,6 +146,14 @@ const RecipePage = () => {
 
           <Typography variant="subtitle1" gutterBottom sx={{ fontSize: '1.1rem' }}>
             <strong>Cuisine:</strong> {recipe.cuisine} | <strong>Prep Time:</strong> {recipe.preparationTime} | <strong>Difficulty:</strong> {recipe.difficultyLevel}
+            {recipe.nutrition && (
+                <Box mt={1}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>Nutrition Info:</Typography>
+                    <Typography variant="body2">
+                    Calories: {recipe.nutrition.calories} | Protein: {recipe.nutrition.protein}g 
+                    </Typography>
+                </Box>
+            )}
           </Typography>
         </CardContent>
       </Card>
@@ -169,7 +177,7 @@ const RecipePage = () => {
       <Card raised sx={{ mt: 2 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom component="div" sx={{ fontWeight: 'bold' }}>Directions:</Typography>
-          <Typography variant="body1" paragraph>
+          <Typography variant="body1">
             {recipe.description}
           </Typography>
         </CardContent>
