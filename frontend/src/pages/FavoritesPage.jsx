@@ -64,10 +64,25 @@ const FavoritesPage = () => {
         Your Favorite Recipes
       </Typography>
       {favoriteRecipes.length === 0 ? (
-        <Typography variant="subtitle1" sx={{ mt: 2, alignSelf: 'center' }}>
-          No favorites added yet. <Link component="button" variant="body2" onClick={() => navigate('/')}>
-            Explore recipes
-          </Link> and add them to favorites for them to appear here.
+        <Typography variant="h5" sx={{ mt: 10, alignSelf: 'center' }}>
+            No favorites added yet.{' '}
+            <Link
+                component="span"
+                onClick={() => navigate('/')}
+                sx={{
+                    fontSize: 'inherit',
+                    color: 'inherit',
+                    textDecoration: 'underline',
+                    cursor: 'pointer',
+                    transition: 'color 0.2s ease-in-out',
+                    '&:hover': {
+                      color: 'primary.main',
+                    },
+                  }}
+            >
+                Explore recipes
+            </Link>{' '}
+            and add them to favorites for them to appear here.
         </Typography>
       ) : (
         <Box flex={1} display="flex" flexDirection="column" justifyContent="flex-start" alignItems="center" sx={{ width: '100%' }}>

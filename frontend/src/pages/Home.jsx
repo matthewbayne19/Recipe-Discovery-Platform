@@ -6,8 +6,9 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import RecipeList from '../components/RecipeList';
-import { fetchRecipes } from '../api/rest';  // Import the REST API method
+import { fetchRecipes } from '../api/rest'; 
 import ClearIcon from '@mui/icons-material/Clear';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 
 const LOCAL_STORAGE_KEY = 'recipe_cache';
 
@@ -110,14 +111,18 @@ const Home = () => {
         flexDirection: 'column'
       }}
     >
-        <Button
-            variant="contained"
-            color="primary"
-            onClick={() => navigate('/favorites')}
-            sx={{ alignSelf: 'flex-end', mb: 2 }}
+    <Button
+        startIcon={<FavoriteIcon />}
+        onClick={() => navigate('/favorites')}
+        sx={{
+            position: 'fixed',
+            top: 30,
+            right: 30,
+            zIndex: 10
+        }}
         >
-            View Favorites
-        </Button>
+        View Favorites
+    </Button>
 
       {/* Filters */}
       <Box

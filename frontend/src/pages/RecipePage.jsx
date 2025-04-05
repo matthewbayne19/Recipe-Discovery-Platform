@@ -2,15 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@apollo/client";
 import {
-    CircularProgress, Typography, Box, Button, Tooltip, Snackbar,
-    Card, CardContent, List, ListItem, ListItemText, Checkbox, CardMedia, Divider
+  CircularProgress, Typography, Box, Button, Tooltip, Snackbar,
+  Card, CardContent, List, ListItem, ListItemText, Checkbox, CardMedia, Divider
 } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack"; // Icon for the back button
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import { GET_RECIPE_BY_ID, TOGGLE_FAVORITE_MUTATION, GET_USER_FAVORITES } from "../api/graphql";
 
 const RecipePage = () => {
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
   const { id } = useParams();
   const [cachedRecipe, setCachedRecipe] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -76,9 +77,34 @@ const RecipePage = () => {
 
   return (
     <Box p={3} sx={{ maxWidth: 900, margin: 'auto' }}>
-      <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/')} sx={{ position: 'absolute', top: 30, left: 30 }}>
-        Home
-      </Button>
+      {/* Top navigation buttons */}
+      <Box>
+        <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate('/')}
+            sx={{
+            position: 'fixed',
+            top: 30,
+            left: 30,
+            zIndex: 10
+            }}
+        >
+            Home
+        </Button>
+        <Button
+            startIcon={<FavoriteIcon />}
+            onClick={() => navigate('/favorites')}
+            sx={{
+            position: 'fixed',
+            top: 30,
+            right: 30,
+            zIndex: 10
+            }}
+        >
+            View Favorites
+        </Button>
+      </Box>
+
       <Card raised sx={{ mb: 2 }}>
         {recipe.imageUrl && (
           <CardMedia
@@ -117,9 +143,7 @@ const RecipePage = () => {
           <List dense>
             {recipe.ingredients.map((ingredient, index) => (
               <React.Fragment key={index}>
-                <ListItem secondaryAction={
-                  <Checkbox edge="end" />
-                }>
+                <ListItem secondaryAction={<Checkbox edge="end" />}>
                   <ListItemText primary={ingredient} />
                 </ListItem>
                 {index !== recipe.ingredients.length - 1 && <Divider />}
@@ -148,4 +172,4 @@ const RecipePage = () => {
   );
 };
 
-export default RecipePage
+export default RecipePage;
