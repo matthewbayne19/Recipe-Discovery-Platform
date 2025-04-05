@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useQuery, useApolloClient } from "@apollo/client";
-import { Container, Typography, Grid, CircularProgress, Alert, Link, Box, Button } from '@mui/material';
+import {
+  Container, Typography, Grid, CircularProgress, Alert, Link, Box, Button
+} from '@mui/material';
 import RecipeCard from '../components/RecipeCard';
 import { GET_USER_FAVORITES, GET_RECIPE_BY_ID } from '../api/graphql';
 import { useNavigate } from 'react-router-dom';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';  // Icon for the back button
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const FavoritesPage = () => {
   const client = useApolloClient();
@@ -13,15 +15,7 @@ const FavoritesPage = () => {
   const [loadingDetails, setLoadingDetails] = useState(false);
   const { data, loading, error } = useQuery(GET_USER_FAVORITES);
 
-  useEffect(() => {
-    if (!loading && data && data.userFavorites) {
-      if (data.userFavorites.length > 0) {
-        fetchFavoriteRecipesDetails(data.userFavorites);
-      }
-    }
-  }, [data, loading]);
-
-  const fetchFavoriteRecipesDetails = async (recipeIds) => {
+  const fetchFavoriteRecipesDetails = useCallback(async (recipeIds) => {
     setLoadingDetails(true);
     try {
       const recipes = await Promise.all(
@@ -37,7 +31,13 @@ const FavoritesPage = () => {
       console.error("Error fetching recipes details:", err);
     }
     setLoadingDetails(false);
-  };
+  }, [client]);
+
+  useEffect(() => {
+    if (!loading && data?.userFavorites?.length > 0) {
+      fetchFavoriteRecipesDetails(data.userFavorites);
+    }
+  }, [data, loading, fetchFavoriteRecipesDetails]);
 
   if (loading || loadingDetails) {
     return (
@@ -65,24 +65,24 @@ const FavoritesPage = () => {
       </Typography>
       {favoriteRecipes.length === 0 ? (
         <Typography variant="h5" sx={{ mt: 10, alignSelf: 'center' }}>
-            No favorites added yet.{' '}
-            <Link
-                component="span"
-                onClick={() => navigate('/')}
-                sx={{
-                    fontSize: 'inherit',
-                    color: 'inherit',
-                    textDecoration: 'underline',
-                    cursor: 'pointer',
-                    transition: 'color 0.2s ease-in-out',
-                    '&:hover': {
-                      color: 'primary.main',
-                    },
-                  }}
-            >
-                Explore recipes
-            </Link>{' '}
-            and add them to favorites for them to appear here.
+          No favorites added yet.{' '}
+          <Link
+            component="span"
+            onClick={() => navigate('/')}
+            sx={{
+              fontSize: 'inherit',
+              color: 'inherit',
+              textDecoration: 'underline',
+              cursor: 'pointer',
+              transition: 'color 0.2s ease-in-out',
+              '&:hover': {
+                color: 'primary.main',
+              },
+            }}
+          >
+            Explore recipes
+          </Link>{' '}
+          and add them to favorites for them to appear here.
         </Typography>
       ) : (
         <Box flex={1} display="flex" flexDirection="column" justifyContent="flex-start" alignItems="center" sx={{ width: '100%' }}>
