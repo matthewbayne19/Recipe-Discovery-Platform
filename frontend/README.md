@@ -1,4 +1,3 @@
-```markdown
 # Recipe Discovery Platform
 
 A full-stack recipe discovery web application built with a .NET backend and React frontend. Users can browse, filter, search, and favorite recipes. Both REST and GraphQL APIs are used to demonstrate flexibility and effective data management.
