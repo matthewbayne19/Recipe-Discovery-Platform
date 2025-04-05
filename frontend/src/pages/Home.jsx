@@ -6,9 +6,10 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import RecipeList from '../components/RecipeList';
-import { fetchRecipes } from '../api/rest'; 
+import { fetchRecipes, searchRecipesByName } from '../api/rest'; 
 import ClearIcon from '@mui/icons-material/Clear';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import SearchIcon from '@mui/icons-material/Search';
 
 const LOCAL_STORAGE_KEY = 'recipe_cache';
 
@@ -23,6 +24,7 @@ const Home = () => {
   const [filterIngredient, setFilterIngredient] = useState(localStorage.getItem('filterIngredient') || '');
   const [debouncedCuisine, setDebouncedCuisine] = useState(filterCuisine);
   const [debouncedIngredient, setDebouncedIngredient] = useState(filterIngredient);
+  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
   // Debounce filters
@@ -99,6 +101,44 @@ const Home = () => {
     setFilterIngredient('');
   };
 
+  const handleClearSearch = async () => {
+    setSearchTerm('');
+    setPage(1);
+  
+    try {
+      const result = await fetchRecipes({
+        page: 1,
+        pageSize,
+        cuisine: debouncedCuisine,
+        ingredient: debouncedIngredient
+      });
+  
+      console.log('Reset to default recipe list after clearing search');
+      setRecipes(result.recipes);
+      setTotalCount(result.totalCount);
+    } catch (err) {
+      console.error('Failed to reload recipes after clearing search:', err);
+      setError('Failed to load recipes.');
+    }
+  };
+
+  const handleSearch = async () => {
+    if (!searchTerm.trim()) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const results = await searchRecipesByName(searchTerm.trim());
+      setRecipes(results || []);
+      setTotalCount(results?.length || 0);
+      setPage(1);
+    } catch (err) {
+      setError("Search failed.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
@@ -124,52 +164,68 @@ const Home = () => {
         View Favorites
     </Button>
 
-      {/* Filters */}
-      <Box
+    {/* Filters */}
+    <Box
         mb={3}
         display="flex"
         justifyContent="center"
         alignItems="center"
         gap={2}
         flexWrap="wrap"
-      >
+        >
         <TextField
-          label="Filter by cuisine"
-          variant="outlined"
-          value={filterCuisine}
-          onChange={(e) => setFilterCuisine(e.target.value)}
-          InputProps={{
-            endAdornment: filterCuisine && (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={handleClearCuisine}
-                  edge="end"
-                >
-                  <ClearIcon />
+        label="Search by name"
+        variant="outlined"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        InputProps={{
+            endAdornment: (
+            <InputAdornment position="end">
+                {searchTerm && (
+                <IconButton onClick={handleClearSearch} edge="end">
+                    <ClearIcon />
                 </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-        <TextField
-          label="Filter by ingredient"
-          variant="outlined"
-          value={filterIngredient}
-          onChange={(e) => setFilterIngredient(e.target.value)}
-          InputProps={{
-            endAdornment: filterIngredient && (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={handleClearIngredient}
-                  edge="end"
-                >
-                  <ClearIcon />
+                )}
+                <IconButton onClick={handleSearch} edge="end">
+                <SearchIcon />
                 </IconButton>
-              </InputAdornment>
+            </InputAdornment>
             ),
-          }}
-        />
-      </Box>
+        }}
+    />
+
+  <TextField
+    label="Filter by cuisine"
+    variant="outlined"
+    value={filterCuisine}
+    onChange={(e) => setFilterCuisine(e.target.value)}
+    InputProps={{
+      endAdornment: filterCuisine && (
+        <InputAdornment position="end">
+          <IconButton onClick={handleClearCuisine} edge="end">
+            <ClearIcon />
+          </IconButton>
+        </InputAdornment>
+      ),
+    }}
+  />
+  <TextField
+    label="Filter by ingredient"
+    variant="outlined"
+    value={filterIngredient}
+    onChange={(e) => setFilterIngredient(e.target.value)}
+    InputProps={{
+      endAdornment: filterIngredient && (
+        <InputAdornment position="end">
+          <IconButton onClick={handleClearIngredient} edge="end">
+            <ClearIcon />
+          </IconButton>
+        </InputAdornment>
+      ),
+    }}
+  />
+</Box>
+
 
       {/* Main content */}
       <Box
