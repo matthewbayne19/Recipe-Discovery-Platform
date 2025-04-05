@@ -3,10 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@apollo/client";
 import {
     CircularProgress, Typography, Box, Button, Tooltip, Snackbar,
-    Card, CardContent, List, ListItem, ListItemText, Checkbox, CardMedia
+    Card, CardContent, List, ListItem, ListItemText, Checkbox, CardMedia, Divider
 } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack"; // Icon for the button
+import ArrowBackIcon from "@mui/icons-material/ArrowBack"; // Icon for the back button
 import { GET_RECIPE_BY_ID, TOGGLE_FAVORITE_MUTATION, GET_USER_FAVORITES } from "../api/graphql";
 
 const RecipePage = () => {
@@ -79,7 +79,7 @@ const RecipePage = () => {
       <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/')} sx={{ position: 'absolute', top: 30, left: 30 }}>
         Home
       </Button>
-      <Card raised sx={{ mb: 4 }}>
+      <Card raised sx={{ mb: 2 }}>
         {recipe.imageUrl && (
           <CardMedia
             component="img"
@@ -106,31 +106,35 @@ const RecipePage = () => {
           </Box>
 
           <Typography variant="subtitle1" gutterBottom sx={{ fontSize: '1.1rem' }}>
-            Cuisine: {recipe.cuisine} | Prep Time: {recipe.preparationTime} | Difficulty: {recipe.difficultyLevel}
+            <strong>Cuisine:</strong> {recipe.cuisine} | <strong>Prep Time:</strong> {recipe.preparationTime} | <strong>Difficulty:</strong> {recipe.difficultyLevel}
           </Typography>
-
-          <Card sx={{ mt: 2, p: 2 }}>
-            <Typography variant="body1" paragraph>
-              {recipe.description}
-            </Typography>
-          </Card>
         </CardContent>
       </Card>
 
       <Card raised>
         <CardContent>
-          <Typography variant="h6" gutterBottom>Ingredients:</Typography>
+          <Typography variant="h6" gutterBottom component="div" sx={{ fontWeight: 'bold' }}>Ingredients:</Typography>
           <List dense>
             {recipe.ingredients.map((ingredient, index) => (
-              <ListItem key={index} secondaryAction={
-                <Checkbox
-                  edge="end"
-                />
-              }>
-                <ListItemText primary={ingredient} />
-              </ListItem>
+              <React.Fragment key={index}>
+                <ListItem secondaryAction={
+                  <Checkbox edge="end" />
+                }>
+                  <ListItemText primary={ingredient} />
+                </ListItem>
+                {index !== recipe.ingredients.length - 1 && <Divider />}
+              </React.Fragment>
             ))}
           </List>
+        </CardContent>
+      </Card>
+
+      <Card raised sx={{ mt: 2 }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom component="div" sx={{ fontWeight: 'bold' }}>Directions:</Typography>
+          <Typography variant="body1" paragraph>
+            {recipe.description}
+          </Typography>
         </CardContent>
       </Card>
 
@@ -144,4 +148,4 @@ const RecipePage = () => {
   );
 };
 
-export default RecipePage;
+export default RecipePage

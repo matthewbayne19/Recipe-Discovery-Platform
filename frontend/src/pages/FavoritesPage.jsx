@@ -60,7 +60,7 @@ const FavoritesPage = () => {
       <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/')} sx={{ position: 'absolute', top: 30, left: 30 }}>
         Home
       </Button>
-      <Typography variant="h4" gutterBottom sx={{ mt: 2, alignSelf: 'flex-start' }}>
+      <Typography variant="h4" gutterBottom sx={{ mt: 2, mb: 5, alignSelf: 'flex-start' }}>
         Your Favorite Recipes
       </Typography>
       {favoriteRecipes.length === 0 ? (
@@ -70,7 +70,7 @@ const FavoritesPage = () => {
           </Link> and add them to favorites for them to appear here.
         </Typography>
       ) : (
-        <Box flex={1} display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+        <Box flex={1} display="flex" flexDirection="column" justifyContent="flex-start" alignItems="center" sx={{ width: '100%' }}>
           <Grid container spacing={2} justifyContent="center">
             {favoriteRecipes.map((recipe) => (
               <Grid item key={recipe.id} xs={12} sm={6} md={4}>
